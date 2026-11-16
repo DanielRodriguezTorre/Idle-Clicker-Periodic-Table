@@ -4,17 +4,13 @@ Este proyecto consiste en un videojuego educativo de tipo *idle clicker* basado 
 
 # Instalación
 
-El videojuego está desarrollado exclusivamente para Windows (PC). No existe una versión para Android.
+El videojuego está desarrollado para Windows (PC).
 
 Para ejecutar la versión compilada, hay que descargar la carpeta RELEASE, descomprimir su contenido en una carpeta y abrir el archivo ejecutable (Idle Clicker Periodic Table.exe) incluido. Los archivos que acompañan al ejecutable deben mantenerse en la misma carpeta.
-
-La compilación para Windows formará parte de los entregables del TFM cuando esté preparada.
 
 # Uso
 
 El jugador obtiene moneda mediante clics y sistemas automáticos, investiga elementos químicos y sus procesos, adquiere maquinaria y gestiona residuos para producir elementos puros.
-
-La versión del TFM se centra en cuatro elementos químicos. Los procesos se simplifican con fines educativos y no constituyen una simulación industrial exacta.
 
 # Licencia
 
