@@ -6,7 +6,7 @@ Este proyecto consiste en un videojuego educativo de tipo *idle clicker* basado 
 
 El videojuego está desarrollado exclusivamente para Windows (PC). No existe una versión para Android.
 
-Para ejecutar la versión compilada, hay que descargar la carpeta RELEASE, descomprimir su contenido en una carpeta y abrir el archivo ejecutable (.exe) incluido. Los archivos que acompañan al ejecutable deben mantenerse en la misma carpeta.
+Para ejecutar la versión compilada, hay que descargar la carpeta RELEASE, descomprimir su contenido en una carpeta y abrir el archivo ejecutable (Idle Clicker Periodic Table.exe) incluido. Los archivos que acompañan al ejecutable deben mantenerse en la misma carpeta.
 
 La compilación para Windows formará parte de los entregables del TFM cuando esté preparada.
 
