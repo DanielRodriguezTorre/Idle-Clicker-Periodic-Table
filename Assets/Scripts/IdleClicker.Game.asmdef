@@ -1,0 +1,5 @@
+{
+    "name": "IdleClicker.Game",
+    "references": ["IdleClicker.Core", "UnityEngine.UI"],
+    "autoReferenced": true
+}

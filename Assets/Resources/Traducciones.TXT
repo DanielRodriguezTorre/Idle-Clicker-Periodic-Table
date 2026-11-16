@@ -1,0 +1,48 @@
+key	es	en	de	da	fr	it
+game.title	Idle Clicker Periodic Table	Idle Clicker Periodic Table	Idle Clicker Periodic Table	Idle Clicker Periodic Table	Idle Clicker Periodic Table	Idle Clicker Periodic Table
+nav.economy	Economía	Economy	Wirtschaft	Økonomi	Économie	Economia
+nav.research	Investigación	Research	Forschung	Forskning	Recherche	Ricerca
+nav.engineering	Ingeniería	Engineering	Ingenieurwesen	Ingeniørarbejde	Ingénierie	Ingegneria
+nav.table	Tabla periódica	Periodic table	Periodensystem	Det periodiske system	Tableau périodique	Tavola periodica
+nav.production	Producción	Production	Produktion	Produktion	Production	Produzione
+nav.settings	Opciones	Settings	Einstellungen	Indstillinger	Options	Impostazioni
+nav.home	Menú principal	Main menu	Hauptmenü	Hovedmenu	Menu principal	Menu principale
+menu.continue	Continuar	Continue	Fortsetzen	Fortsæt	Continuer	Continua
+menu.new	Nueva partida	New game	Neues Spiel	Nyt spil	Nouvelle partie	Nuova partita
+menu.quit	Salir	Quit	Beenden	Afslut	Quitter	Esci
+menu.confirm_new	¿Empezar una nueva partida? Se perderá el progreso guardado.	Start a new game? Saved progress will be lost.	Ein neues Spiel beginnen? Der gespeicherte Fortschritt geht verloren.	Start et nyt spil? Gemte fremskridt går tabt.	Commencer une nouvelle partie ? La progression sauvegardée sera perdue.	Iniziare una nuova partita? I progressi salvati andranno persi.
+common.confirm	Confirmar	Confirm	Bestätigen	Bekræft	Confirmer	Conferma
+common.cancel	Cancelar	Cancel	Abbrechen	Annuller	Annuler	Annulla
+common.back	Volver	Back	Zurück	Tilbage	Retour	Indietro
+common.pending	Pendiente	Pending	Ausstehend	Afventer	En attente	In attesa
+resource.money	Dinero: {0:N0}	Money: {0:N0}	Geld: {0:N0}	Penge: {0:N0}	Argent : {0:N0}	Denaro: {0:N0}
+resource.science	Ciencia: {0:N0}	Science: {0:N0}	Wissenschaft: {0:N0}	Videnskab: {0:N0}	Science : {0:N0}	Scienza: {0:N0}
+resource.ingenuity	Ingenio: {0:N0}	Ingenuity: {0:N0}	Erfindergeist: {0:N0}	Opfindsomhed: {0:N0}	Ingéniosité : {0:N0}	Ingegno: {0:N0}
+economy.click	Haz clic aquí para obtener dinero	Click here to earn money	Klicke hier, um Geld zu verdienen	Klik her for at tjene penge	Cliquez ici pour gagner de l'argent	Fai clic qui per guadagnare denaro
+economy.click_value	Dinero por clic: {0:N0}	Money per click: {0:N0}	Geld pro Klick: {0:N0}	Penge pr. klik: {0:N0}	Argent par clic : {0:N0}	Denaro per clic: {0:N0}
+economy.machine_count	Cantidad: {0:N0}	Count: {0:N0}	Anzahl: {0:N0}	Antal: {0:N0}	Quantité : {0:N0}	Quantità: {0:N0}
+economy.machine_rate	Dinero por segundo: {0:N0}	Money per second: {0:N0}	Geld pro Sekunde: {0:N0}	Penge pr. sekund: {0:N0}	Argent par seconde : {0:N0}	Denaro al secondo: {0:N0}
+economy.gain	+{0:N0}	+{0:N0}	+{0:N0}	+{0:N0}	+{0:N0}	+{0:N0}
+machine.1	Pulsador automático	Automatic clicker	Automatischer Klicker	Automatisk klikker	Cliqueur automatique	Cliccatore automatico
+machine.2	Pulsador mejorado	Improved clicker	Verbesserter Klicker	Forbedret klikker	Cliqueur amélioré	Cliccatore migliorato
+machine.3	Pulsador avanzado	Advanced clicker	Fortgeschrittener Klicker	Avanceret klikker	Cliqueur avancé	Cliccatore avanzato
+machine.4	Pulsador industrial	Industrial clicker	Industrieller Klicker	Industriel klikker	Cliqueur industriel	Cliccatore industriale
+settings.title	Opciones	Settings	Einstellungen	Indstillinger	Options	Impostazioni
+settings.language	Idioma	Language	Sprache	Sprog	Langue	Lingua
+settings.text_size	Tamaño del texto	Text size	Textgröße	Tekststørrelse	Taille du texte	Dimensione del testo
+settings.color_mode	Modo de color	Color mode	Farbmodus	Farvetilstand	Mode de couleur	Modalità colore
+language.es	Español	Español	Español	Español	Español	Español
+language.en	English	English	English	English	English	English
+language.de	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch
+language.da	Dansk	Dansk	Dansk	Dansk	Dansk	Dansk
+language.fr	Français	Français	Français	Français	Français	Français
+language.it	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano
+size.small	Pequeño	Small	Klein	Lille	Petit	Piccolo
+size.normal	Normal	Normal	Normal	Normal	Normal	Normale
+size.large	Grande	Large	Groß	Stor	Grand	Grande
+color.normal	Normal	Normal	Normal	Normal	Normal	Normale
+color.protanopia	Protanopia	Protanopia	Protanopie	Protanopi	Protanopie	Protanopia
+color.deuteranopia	Deuteranopia	Deuteranopia	Deuteranopie	Deuteranopi	Deutéranopie	Deuteranopia
+color.tritanopia	Tritanopia	Tritanopia	Tritanopie	Tritanopi	Tritanopie	Tritanopia
+save.error	No se ha podido guardar la partida.	The game could not be saved.	Das Spiel konnte nicht gespeichert werden.	Spillet kunne ikke gemmes.	La partie n'a pas pu être sauvegardée.	Impossibile salvare la partita.
+save.corrupt	No se ha podido cargar la partida guardada. Puedes iniciar una nueva partida.	The saved game could not be loaded. You can start a new game.	Der Spielstand konnte nicht geladen werden. Du kannst ein neues Spiel beginnen.	Det gemte spil kunne ikke indlæses. Du kan starte et nyt spil.	La sauvegarde n'a pas pu être chargée. Vous pouvez commencer une nouvelle partie.	Impossibile caricare la partita salvata. Puoi iniziare una nuova partita.

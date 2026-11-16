@@ -1,2 +1,5 @@
 ﻿<Solution>
+  <Project Path="IdleClicker.Game.csproj" />
+  <Project Path="IdleClicker.Core.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>
