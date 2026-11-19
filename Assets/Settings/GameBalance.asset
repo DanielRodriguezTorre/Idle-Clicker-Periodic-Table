@@ -17,3 +17,7 @@ MonoBehaviour:
   - 10
   - 100
   - 1000
+  staffInitialHireCost: 10
+  staffHireIncreasePercent: 15
+  staffInitialUpkeep: 1
+  staffUpkeepIncreasePercent: 15

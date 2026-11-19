@@ -1,4 +1,5 @@
 using System.IO;
+using IdleClickerPeriodicTable.Core;
 using IdleClickerPeriodicTable.Presentation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -44,6 +45,8 @@ public static class ScenePreview
                 GamePreferences.SetColorMode(index % 4);
                 RenderScene("Economia", directory, "economia-grande-" + index);
                 RenderScene("Configuracion", directory, "configuracion-grande-" + index);
+                RenderScene("Investigacion", directory, "investigacion-grande-" + index);
+                RenderScene("Ingenieria", directory, "ingenieria-grande-" + index);
             }
 
             GamePreferences.SetLanguage(2);
@@ -87,7 +90,7 @@ public static class ScenePreview
 
             // Los textos ocultos también se preparan, por si la captura necesita mostrar algún panel.
             foreach (LocalizedText label in root.GetComponentsInChildren<LocalizedText>(true))
-                label.SetArguments(largeValues ? 5000000000d : 0d);
+                label.SetArguments(largeValues ? 5000000000L : 0L);
 
             foreach (AccessibleGraphic graphic in root.GetComponentsInChildren<AccessibleGraphic>(true))
                 graphic.Refresh();
@@ -97,7 +100,32 @@ public static class ScenePreview
                     navigation.activeOutline.enabled = navigation.sceneName == sceneName;
 
             if (root.TryGetComponent(out EconomyView economy)) 
-                economy.clickValue.SetArguments(1d);
+                economy.clickValue.SetArguments(1L);
+
+            if (root.TryGetComponent(out StaffPurchaseView purchases))
+            {
+                purchases.researcherPrice.SetArguments(largeValues ? 5000000000L : 10L);
+                purchases.engineerPrice.SetArguments(largeValues ? 5000000000L : 10L);
+            }
+
+            if (root.TryGetComponent(out StaffRoomView room))
+            {
+                // La captura usa datos de ejemplo y círculos quietos, no contrata personal ni avanza la partida.
+                room.countLabel.SetArguments(12);
+                GameBalance balance = UnityEditor.AssetDatabase.LoadAssetAtPath<GameBalance>("Assets/Settings/GameBalance.asset");
+                StaffService staff = new StaffService(new GameState { researchers = 12 }, balance);
+                room.upkeepLabel.SetArguments(staff.ResearcherUpkeep);
+                room.statusLabel.key = "staff.working";
+                room.statusLabel.Refresh();
+
+                for (int index = 0; index < 12; index++)
+                {
+                    GameObject worker = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(room.workerPrefab.gameObject, scene);
+                    worker.transform.SetParent(room.movementArea, false);
+                    ((RectTransform)worker.transform).anchoredPosition = new Vector2(-650 + (index % 6) * 260, -100 + (index / 6) * 170);
+                    worker.GetComponent<AccessibleGraphic>().Refresh();
+                }
+            }
 
             if (showConfirmation && root.TryGetComponent(out StartMenu start)) 
                 start.confirmationPanel.SetActive(true);

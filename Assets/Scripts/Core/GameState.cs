@@ -9,19 +9,29 @@ namespace IdleClickerPeriodicTable.Core
     public sealed class GameState
     {
         /// <summary>
-        /// Dinero disponible, incluidas las fracciones que producen las máquinas.
+        /// El dinero disponible para comprar y pagar el mantenimiento, siempre en unidades enteras.
         /// </summary>
-        public double money;
+        public long money;
 
         /// <summary>
-        /// La ciencia queda preparada para cuando se añada la investigación.
+        /// Ciencia acumulada por el trabajo de los investigadores.
         /// </summary>
-        public double science;
+        public long science;
 
         /// <summary>
-        /// El ingenio queda preparado para cuando se añada la ingeniería.
+        /// Ingenio acumulado por el trabajo de los ingenieros.
         /// </summary>
-        public double ingenuity;
+        public long ingenuity;
+
+        /// <summary>
+        /// Investigadores contratados, cada uno puede producir una unidad de ciencia por segundo.
+        /// </summary>
+        public int researchers;
+
+        /// <summary>
+        /// Ingenieros contratados, cada uno puede producir una unidad de ingenio por segundo.
+        /// </summary>
+        public int engineers;
 
         /// <summary>
         /// Investigaciones desbloqueadas hasta ahora, entre cero y cuatro.
@@ -43,9 +53,11 @@ namespace IdleClickerPeriodicTable.Core
         /// </summary>
         public void Normalize()
         {
-            money = NormalizeResource(money);
-            science = NormalizeResource(science);
-            ingenuity = NormalizeResource(ingenuity);
+            money = Math.Max(0L, money);
+            science = Math.Max(0L, science);
+            ingenuity = Math.Max(0L, ingenuity);
+            researchers = Math.Max(0, researchers);
+            engineers = Math.Max(0, engineers);
             researchLevel = Math.Max(0, Math.Min(4, researchLevel));
 
             // Aunque el guardado venga incompleto, tiene que quedar sitio para las cuatro familias.
@@ -64,14 +76,6 @@ namespace IdleClickerPeriodicTable.Core
                 machines[index] = Math.Max(0, machines[index]);
                 machineLevels[index] = Math.Max(1, Math.Min(5, machineLevels[index]));
             }
-        }
-
-        /// <summary>
-        /// Si un recurso viene en negativo, infinito o con un valor que no es un número, se deja a cero.
-        /// </summary>
-        private static double NormalizeResource(double value)
-        {
-            return double.IsNaN(value) || double.IsInfinity(value) || value < 0 ? 0 : value;
         }
     }
 }

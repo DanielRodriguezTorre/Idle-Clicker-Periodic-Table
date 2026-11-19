@@ -37,6 +37,15 @@ public static class SceneAuthoring
     private static bool resumeCreation;
 
     /// <summary>
+    /// Se cargan la fuente y el sprite de Unity que usan las herramientas para preparar las pantallas.
+    /// </summary>
+    internal static void LoadUIResources()
+    {
+        font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        buttonSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+    }
+
+    /// <summary>
     /// Se retoma una creación que se quedó a medias, permitiendo guardar otra vez en las mismas rutas.
     /// </summary>
     public static void ResumeCreate()
@@ -58,8 +67,7 @@ public static class SceneAuthoring
 
         Directory.CreateDirectory(PrefabFolder);
         Directory.CreateDirectory("Assets/Settings");
-        font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        buttonSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+        LoadUIResources();
         CreateSessionPrefab();
         CreateMenuPrefab();
         CreateStartScene();
@@ -71,6 +79,7 @@ public static class SceneAuthoring
 
         CreatePendingScene("Investigacion", "nav.research");
         CreateSettingsScene();
+        StaffSceneAuthoring.Apply();
         EditorBuildSettingsScene[] buildScenes = new EditorBuildSettingsScene[Scenes.Length];
 
         for (int index = 0; index < Scenes.Length; index++)
@@ -423,7 +432,7 @@ public static class SceneAuthoring
     /// <summary>
     /// Se crea un elemento de UI centrado con el padre, la posición y el tamaño indicados.
     /// </summary>
-    private static RectTransform Rect(string name, Transform parent, Vector2 position, Vector2 size)
+    internal static RectTransform Rect(string name, Transform parent, Vector2 position, Vector2 size)
     {
         GameObject item = new GameObject(name, typeof(RectTransform));
         RectTransform rect = (RectTransform)item.transform;
@@ -440,7 +449,7 @@ public static class SceneAuthoring
     /// <summary>
     /// Se crea una etiqueta conectada a su traducción y a los ajustes de tamaño.
     /// </summary>
-    private static LocalizedText Label(string name, Transform parent, string key, float x, float y, float width, float height, int fontSize)
+    internal static LocalizedText Label(string name, Transform parent, string key, float x, float y, float width, float height, int fontSize)
     {
         RectTransform rect = Rect(name, parent, new Vector2(x, y), new Vector2(width, height));
         Text text = rect.gameObject.AddComponent<Text>();
@@ -463,7 +472,7 @@ public static class SceneAuthoring
     /// <summary>
     /// Se crea un botón con su imagen y etiqueta traducible, la acción se conecta después.
     /// </summary>
-    private static Button Button(string name, Transform parent, string key, float x, float y, float width, float height, int fontSize)
+    internal static Button Button(string name, Transform parent, string key, float x, float y, float width, float height, int fontSize)
     {
         RectTransform rect = Rect(name, parent, new Vector2(x, y), new Vector2(width, height));
         Image image = rect.gameObject.AddComponent<Image>();
@@ -483,7 +492,7 @@ public static class SceneAuthoring
     /// <summary>
     /// Se asigna el color original y el gráfico queda preparado para cambiar de paleta.
     /// </summary>
-    private static void SetColor(Graphic graphic, Color color)
+    internal static void SetColor(Graphic graphic, Color color)
     {
         graphic.color = color;
         AccessibleGraphic accessible = graphic.GetComponent<AccessibleGraphic>();

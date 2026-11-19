@@ -33,7 +33,7 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>
         /// Lo que vale ahora cada clic, según la investigación desbloqueada.
         /// </summary>
-        public double ClickValue
+        public long ClickValue
         {
             get
             {
@@ -51,14 +51,14 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>
         /// Lo que ganan todas las máquinas juntas en un segundo de juego.
         /// </summary>
-        public double IncomePerSecond
+        public long IncomePerSecond
         {
             get
             {
-                double total = 0;
+                long total = 0;
 
                 for (int index = 0; index < 4; index++)
-                    total += GetMachineIncome(index);
+                    total = ResourceMath.AddCapped(total, GetMachineIncome(index));
 
                 return total;
             }
@@ -70,7 +70,7 @@ namespace IdleClickerPeriodicTable.Core
         /// <param name="index">La familia que se quiere consultar, de cero a tres.</param>
         /// <returns>Lo que gana por segundo, o cero si la producción base falta o no es válida.</returns>
         /// <exception cref="ArgumentOutOfRangeException">El índice no corresponde a ninguna de las cuatro familias.</exception>
-        public double GetMachineIncome(int index)
+        public long GetMachineIncome(int index)
         {
             if (index < 0 || index >= 4)
                 throw new ArgumentOutOfRangeException(nameof(index), "El índice de la familia de máquinas debe estar entre 0 y 3.");
@@ -79,12 +79,13 @@ namespace IdleClickerPeriodicTable.Core
             if (balance.baseRates == null || index >= balance.baseRates.Length)
                 return 0;
 
-            double rate = balance.baseRates[index];
+            long rate = balance.baseRates[index];
 
-            if (rate < 0 || double.IsNaN(rate) || double.IsInfinity(rate))
+            if (rate < 0)
                 return 0;
 
-            return rate * state.machineLevels[index] * state.machines[index];
+            long incomePerMachine = ResourceMath.MultiplyCapped(rate, state.machineLevels[index]);
+            return ResourceMath.MultiplyCapped(incomePerMachine, state.machines[index]);
         }
 
         /// <summary>
@@ -92,7 +93,7 @@ namespace IdleClickerPeriodicTable.Core
         /// </summary>
         public void Click()
         {
-            state.money += ClickValue;
+            state.money = ResourceMath.AddCapped(state.money, ClickValue);
         }
 
         /// <summary>
@@ -100,7 +101,7 @@ namespace IdleClickerPeriodicTable.Core
         /// </summary>
         public void Tick()
         {
-            state.money += IncomePerSecond;
+            state.money = ResourceMath.AddCapped(state.money, IncomePerSecond);
         }
     }
 }

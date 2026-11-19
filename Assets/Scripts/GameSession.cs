@@ -18,7 +18,7 @@ namespace IdleClickerPeriodicTable
         public static GameSession Instance { get; private set; }
 
         /// <summary>
-        /// Los valores de producción que se pueden ajustar desde el proyecto.
+        /// Los valores de producción y los costes del personal que se pueden ajustar desde el proyecto.
         /// </summary>
         public GameBalance balance;
 
@@ -36,6 +36,11 @@ namespace IdleClickerPeriodicTable
         /// Quien hace las cuentas de los clics y la producción de esta partida.
         /// </summary>
         public EconomyService Economy { get; private set; }
+
+        /// <summary>
+        /// Aquí se llevan las cuentas de contratación, mantenimiento y producción del personal.
+        /// </summary>
+        public StaffService Staff { get; private set; }
 
         /// <summary>
         /// Indica si hay una partida en marcha.
@@ -89,6 +94,7 @@ namespace IdleClickerPeriodicTable
             }
 
             Economy = new EconomyService(State, balance);
+            Staff = new StaffService(State, balance);
         }
 
         private void Update()
@@ -102,7 +108,9 @@ namespace IdleClickerPeriodicTable
             while (secondTimer >= 1)
             {
                 secondTimer -= 1;
+                // Primero entra el dinero de las máquinas, después se comprueba si alcanza para el personal.
                 Economy.Tick();
+                Staff.Tick();
                 Changed?.Invoke();
                 ProductionTick?.Invoke();
             }
@@ -124,6 +132,7 @@ namespace IdleClickerPeriodicTable
         {
             State = new GameState();
             Economy = new EconomyService(State, balance);
+            Staff = new StaffService(State, balance);
             secondTimer = 0;
             saveTimer = 0;
             IsPlaying = true;
@@ -146,6 +155,7 @@ namespace IdleClickerPeriodicTable
 
             State = saved;
             Economy = new EconomyService(State, balance);
+            Staff = new StaffService(State, balance);
             secondTimer = 0;
             saveTimer = 0;
             IsPlaying = true;
@@ -163,6 +173,24 @@ namespace IdleClickerPeriodicTable
 
             Economy.Click();
             Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Se contrata un investigador si alcanza el dinero y se avisa a las pantallas del cambio.
+        /// </summary>
+        public void HireResearcher()
+        {
+            if (IsPlaying && Staff.HireResearcher()) 
+                Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Se contrata un ingeniero si alcanza el dinero y se avisa a las pantallas del cambio.
+        /// </summary>
+        public void HireEngineer()
+        {
+            if (IsPlaying && Staff.HireEngineer()) 
+                Changed?.Invoke();
         }
 
         /// <summary>

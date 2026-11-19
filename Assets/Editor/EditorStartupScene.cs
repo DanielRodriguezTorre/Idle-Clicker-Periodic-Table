@@ -4,19 +4,23 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Abre Inicio al arrancar el editor sin interferir con recompilaciones ni trabajo sin guardar.
+/// Inicio se abre al arrancar el editor, sin molestar a las recompilaciones ni al trabajo sin guardar.
 /// </summary>
 [InitializeOnLoad]
 internal static class EditorStartupScene
 {
-    /// <summary>Ruta de la escena inicial ya diseñada y serializada.</summary>
+    /// <summary>
+    /// La ruta de la escena de inicio que ya está guardada en el proyecto.
+    /// </summary>
     private const string ScenePath = "Assets/Scenes/Inicio.unity";
 
-    /// <summary>Identifica el intento de apertura durante esta sesión del editor.</summary>
+    /// <summary>
+    /// La marca que recuerda si ya se intentó abrir Inicio en esta sesión del editor.
+    /// </summary>
     private const string SessionKey = "IdleClickerPeriodicTable.EditorStartupScene.Opened";
 
     /// <summary>
-    /// Difiere la apertura hasta que el editor termine de importar los assets.
+    /// La apertura se deja para cuando el editor termine de importar los recursos.
     /// </summary>
     static EditorStartupScene()
     {
@@ -27,7 +31,7 @@ internal static class EditorStartupScene
     }
 
     /// <summary>
-    /// Abre la escena una sola vez y conserva las escenas recuperadas o modificadas.
+    /// Se abre Inicio una sola vez, sin cerrar escenas recuperadas ni cambios sin guardar.
     /// </summary>
     private static void OpenStartupScene()
     {
@@ -37,6 +41,7 @@ internal static class EditorStartupScene
             return;
         }
 
+        // El intento cuenta aunque luego no se abra Inicio, así no se insiste tras una recompilación.
         SessionState.SetBool(SessionKey, true);
 
         if (EditorApplication.isPlayingOrWillChangePlaymode)

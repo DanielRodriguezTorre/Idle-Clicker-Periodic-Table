@@ -37,6 +37,16 @@ language.de	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch
 language.da	Dansk	Dansk	Dansk	Dansk	Dansk	Dansk
 language.fr	Français	Français	Français	Français	Français	Français
 language.it	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano
+staff.researchers	Investigadores: {0:N0}	Researchers: {0:N0}	Forscher: {0:N0}	Forskere: {0:N0}	Chercheurs : {0:N0}	Ricercatori: {0:N0}
+staff.engineers	Ingenieros: {0:N0}	Engineers: {0:N0}	Ingenieure: {0:N0}	Ingeniører: {0:N0}	Ingénieurs : {0:N0}	Ingegneri: {0:N0}
+staff.hire_researcher	Contratar investigador	Hire researcher	Forscher einstellen	Ansæt forsker	Recruter un chercheur	Assumi ricercatore
+staff.hire_engineer	Contratar ingeniero	Hire engineer	Ingenieur einstellen	Ansæt ingeniør	Recruter un ingénieur	Assumi ingegnere
+staff.next_price	Siguiente contratación: {0:N0}	Next hire: {0:N0}	Nächste Einstellung: {0:N0}	Næste ansættelse: {0:N0}	Prochain recrutement : {0:N0}	Prossima assunzione: {0:N0}
+staff.upkeep	Mantenimiento total: {0:N0}/s	Total upkeep: {0:N0}/s	Gesamter Unterhalt: {0:N0}/s	Samlet vedligehold: {0:N0}/s	Entretien total : {0:N0}/s	Mantenimento totale: {0:N0}/s
+staff.room_upkeep	Mantenimiento: {0:N0}/s	Upkeep: {0:N0}/s	Unterhalt: {0:N0}/s	Vedligehold: {0:N0}/s	Entretien : {0:N0}/s	Mantenimento: {0:N0}/s
+staff.working	Personal con financiación	Staff funded	Personal finanziert	Personale finansieret	Personnel financé	Personale finanziato
+staff.unfunded	Producción detenida: falta dinero	Production stopped: not enough money	Produktion gestoppt: Geld fehlt	Produktion stoppet: mangler penge	Production arrêtée : fonds insuffisants	Produzione ferma: denaro insufficiente
+staff.none	Sin personal contratado	No staff hired	Kein Personal eingestellt	Intet personale ansat	Aucun personnel recruté	Nessun dipendente assunto
 size.small	Pequeño	Small	Klein	Lille	Petit	Piccolo
 size.normal	Normal	Normal	Normal	Normal	Normal	Normale
 size.large	Grande	Large	Groß	Stor	Grand	Grande

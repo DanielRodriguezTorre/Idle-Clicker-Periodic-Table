@@ -79,7 +79,7 @@ namespace IdleClickerPeriodicTable.Presentation
         {
             for (int index = 0; index < 4; index++)
             {
-                double income = session.Economy.GetMachineIncome(index);
+                long income = session.Economy.GetMachineIncome(index);
 
                 if (income <= 0) 
                     continue;

@@ -116,6 +116,7 @@ namespace IdleClickerPeriodicTable.Presentation
             if (string.IsNullOrEmpty(key)) 
                 return string.Empty;
 
+            // Si falta una traducción, la clave queda a la vista para que sea fácil localizarla.
             string template = Translations.TryGetValue(key, out string[] values) ? values[languageIndex] : key;
 
             if (args == null || args.Length == 0) 
