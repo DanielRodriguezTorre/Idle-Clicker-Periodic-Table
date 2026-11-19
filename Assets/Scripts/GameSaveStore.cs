@@ -5,24 +5,16 @@ using UnityEngine;
 
 namespace IdleClickerPeriodicTable
 {
-    /// <summary>
-    /// La partida se lee y se guarda sin añadir ganancias por el tiempo que el juego estuvo cerrado.
-    /// </summary>
+    /// <summary>La partida se lee y se guarda sin añadir ganancias por el tiempo que el juego estuvo cerrado.</summary>
     public static class GameSaveStore
     {
-        /// <summary>
-        /// La partida vive en este archivo, dentro de la carpeta de datos que proporciona Unity.
-        /// </summary>
+        /// <summary>La partida vive en este archivo, dentro de la carpeta de datos que proporciona Unity.</summary>
         public static string FilePath => Path.Combine(Application.persistentDataPath, "partida.json");
 
-        /// <summary>
-        /// Indica si hay un archivo guardado, que exista no significa que esté bien.
-        /// </summary>
+        /// <summary>Indica si hay un archivo guardado, que exista no significa que esté bien.</summary>
         public static bool Exists => File.Exists(FilePath);
 
-        /// <summary>
-        /// Se intenta recuperar la partida y se ponen sus valores en orden antes de usarla.
-        /// </summary>
+        /// <summary>Se intenta recuperar la partida y se ponen sus valores en orden antes de usarla.</summary>
         public static bool TryLoad(out GameState state)
         {
             state = null;
@@ -53,9 +45,7 @@ namespace IdleClickerPeriodicTable
             }
         }
 
-        /// <summary>
-        /// Primero se escribe en un temporal, así la partida anterior no se pierde a medio guardar.
-        /// </summary>
+        /// <summary>Primero se escribe en un temporal, así la partida anterior no se pierde a medio guardar.</summary>
         public static bool TrySave(GameState state)
         {
             try
@@ -79,7 +69,7 @@ namespace IdleClickerPeriodicTable
             }
         }
 
-        private static string GetErrorReason(Exception exception)
+        static string GetErrorReason(Exception exception)
         {
             // El mensaje de .NET depende del idioma del sistema, por eso el motivo se explica aquí en español.
             if (exception is UnauthorizedAccessException)

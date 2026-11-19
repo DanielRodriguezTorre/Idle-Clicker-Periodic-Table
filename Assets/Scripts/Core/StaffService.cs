@@ -7,28 +7,28 @@ namespace IdleClickerPeriodicTable.Core
     public sealed class StaffService
     {
         /// <summary>La partida con sus recursos y el personal contratado.</summary>
-        private readonly GameState state;
+        readonly GameState state;
 
         /// <summary>Los importes iniciales y cuánto crecen, ajustables desde el Inspector.</summary>
-        private readonly GameBalance balance;
+        readonly GameBalance balance;
 
         /// <summary>La cantidad de empleados que se usó para las cuentas guardadas.</summary>
-        private int cachedResearchers = -1, cachedEngineers = -1;
+        int cachedResearchers = -1, cachedEngineers = -1;
 
         /// <summary>Los ajustes anteriores, así solo se repiten las cuentas cuando hay algún cambio.</summary>
-        private long cachedHireBase, cachedUpkeepBase;
-        private int cachedHirePercent, cachedUpkeepPercent;
+        long cachedHireBase, cachedUpkeepBase;
+        int cachedHirePercent, cachedUpkeepPercent;
 
         /// <summary>Los importes se guardan completos, aunque superen lo que cabe en los recursos de la partida.</summary>
-        private BigInteger researcherCost, engineerCost, researcherUpkeep, engineerUpkeep;
+        BigInteger researcherCost, engineerCost, researcherUpkeep, engineerUpkeep;
 
         /// <summary>Se conecta la plantilla a la partida y se ponen sus datos en orden antes de empezar.</summary>
-        /// <param name="state">La partida sobre la que se harán las cuentas.</param>
+        /// <param name="state">La partida ya creada o cargada sobre la que se harán las cuentas.</param>
         /// <param name="balance">Los ajustes de contratación y mantenimiento.</param>
-        /// <exception cref="ArgumentNullException">Falta la partida o su configuración.</exception>
+        /// <exception cref="ArgumentNullException">Faltan los ajustes de contratación y mantenimiento.</exception>
         public StaffService(GameState state, GameBalance balance)
         {
-            this.state = state ?? throw new ArgumentNullException(nameof(state), "No se ha proporcionado el estado de la partida.");
+            this.state = state;
             this.balance = balance ?? throw new ArgumentNullException(nameof(balance), "No se ha proporcionado la configuración del personal.");
             state.Normalize();
         }
@@ -39,14 +39,17 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>Lo que cuesta el siguiente ingeniero, la cantidad de investigadores no cambia su precio.</summary>
         public BigInteger EngineerCost { get { RefreshCache(); return engineerCost; } }
 
-        /// <summary>Lo que cuesta mantener a los investigadores, cada importe se redondea hacia arriba antes de sumarlo.</summary>
-        public BigInteger ResearcherUpkeep { get { RefreshCache(); return researcherUpkeep; } }
+        /// <summary>Lo que cuesta mantener a los investigadores activos, es cero mientras estén pausados.</summary>
+        public BigInteger ResearcherUpkeep { get { RefreshCache(); return state.researchersPaused ? BigInteger.Zero : researcherUpkeep; } }
 
-        /// <summary>Lo que cuesta mantener a los ingenieros, cada importe se redondea hacia arriba antes de sumarlo.</summary>
-        public BigInteger EngineerUpkeep { get { RefreshCache(); return engineerUpkeep; } }
+        /// <summary>Lo que cuesta mantener a los ingenieros activos, es cero mientras estén pausados.</summary>
+        public BigInteger EngineerUpkeep { get { RefreshCache(); return state.engineersPaused ? BigInteger.Zero : engineerUpkeep; } }
 
-        /// <summary>Lo que cuesta mantener a toda la plantilla durante un segundo.</summary>
-        public BigInteger TotalUpkeep { get { RefreshCache(); return researcherUpkeep + engineerUpkeep; } }
+        /// <summary>Lo que cuesta mantener durante un segundo a las profesiones que no estén pausadas.</summary>
+        public BigInteger TotalUpkeep { get { return ResearcherUpkeep + EngineerUpkeep; } }
+
+        /// <summary>Indica si hay empleados en alguna profesión que no esté pausada.</summary>
+        public bool HasActiveStaff => (!state.researchersPaused && state.researchers > 0) || (!state.engineersPaused && state.engineers > 0);
 
         /// <summary>El dinero tiene que alcanzar para todo el mantenimiento, sin márgenes ni deuda.</summary>
         public bool CanPayUpkeep => state.money >= TotalUpkeep;
@@ -82,39 +85,46 @@ namespace IdleClickerPeriodicTable.Core
             return true;
         }
 
-        /// <summary>Se paga y se produce un segundo completo, si falta dinero no cobra ni produce ninguna profesión.</summary>
+        /// <summary>Solo cobran y producen las profesiones activas, si no alcanza para todas ellas, ninguna trabaja.</summary>
         public void Tick()
         {
             BigInteger upkeep = TotalUpkeep;
+
             if (state.money < upkeep)
                 return;
 
             state.money -= (long)upkeep;
-            state.science = ResourceMath.AddCapped(state.science, state.researchers);
-            state.ingenuity = ResourceMath.AddCapped(state.ingenuity, state.engineers);
+
+            if (!state.researchersPaused)
+                state.science = ResourceMath.AddCapped(state.science, state.researchers);
+
+            if (!state.engineersPaused)
+                state.ingenuity = ResourceMath.AddCapped(state.ingenuity, state.engineers);
         }
 
         /// <summary>Las cuentas solo se repiten si cambia la cantidad de empleados o alguno de sus ajustes.</summary>
-        private void RefreshCache()
+        void RefreshCache()
         {
             long hireBase = balance.staffInitialHireCost > 0 ? balance.staffInitialHireCost : 10;
             long upkeepBase = balance.staffInitialUpkeep > 0 ? balance.staffInitialUpkeep : 1;
             int hirePercent = balance.staffHireIncreasePercent >= 0 ? balance.staffHireIncreasePercent : 15;
             int upkeepPercent = balance.staffUpkeepIncreasePercent >= 0 ? balance.staffUpkeepIncreasePercent : 15;
-            bool changed = hireBase != cachedHireBase || upkeepBase != cachedUpkeepBase ||
-                hirePercent != cachedHirePercent || upkeepPercent != cachedUpkeepPercent;
+            bool changed = hireBase != cachedHireBase || upkeepBase != cachedUpkeepBase || hirePercent != cachedHirePercent || upkeepPercent != cachedUpkeepPercent;
+
             if (changed || cachedResearchers != state.researchers)
             {
                 cachedResearchers = state.researchers;
                 researcherCost = CalculateCost(cachedResearchers, hireBase, hirePercent);
                 researcherUpkeep = CalculateUpkeep(cachedResearchers, upkeepBase, upkeepPercent);
             }
+
             if (changed || cachedEngineers != state.engineers)
             {
                 cachedEngineers = state.engineers;
                 engineerCost = CalculateCost(cachedEngineers, hireBase, hirePercent);
                 engineerUpkeep = CalculateUpkeep(cachedEngineers, upkeepBase, upkeepPercent);
             }
+
             cachedHireBase = hireBase;
             cachedUpkeepBase = upkeepBase;
             cachedHirePercent = hirePercent;
@@ -122,7 +132,7 @@ namespace IdleClickerPeriodicTable.Core
         }
 
         /// <summary>La fracción se conserva exacta hasta calcular el precio, los redondeos de otras contrataciones no se arrastran.</summary>
-        private static BigInteger CalculateCost(int count, long initial, int percent)
+        static BigInteger CalculateCost(int count, long initial, int percent)
         {
             if (percent == 0)
                 return initial;
@@ -134,7 +144,7 @@ namespace IdleClickerPeriodicTable.Core
         }
 
         /// <summary>Se suma lo que cuesta cada empleado, manteniendo exacta la progresión antes de redondear cada importe.</summary>
-        private static BigInteger CalculateUpkeep(int count, long initial, int percent)
+        static BigInteger CalculateUpkeep(int count, long initial, int percent)
         {
             if (percent == 0)
                 return (BigInteger)count * initial;
@@ -143,6 +153,7 @@ namespace IdleClickerPeriodicTable.Core
             BigInteger numerator = initial;
             BigInteger denominator = BigInteger.One;
             BigInteger multiplier = (BigInteger)100 + percent;
+
             // Redondear cada empleado no da siempre lo mismo que redondear la suma, por eso se suman uno a uno.
             for (int index = 0; index < count; index++)
             {
@@ -150,11 +161,12 @@ namespace IdleClickerPeriodicTable.Core
                 numerator *= multiplier;
                 denominator *= 100;
             }
+
             return total;
         }
 
         /// <summary>Se divide y, si queda resto, se redondea hacia arriba sin usar decimales.</summary>
-        private static BigInteger CeilingDivide(BigInteger numerator, BigInteger denominator)
+        static BigInteger CeilingDivide(BigInteger numerator, BigInteger denominator)
         {
             return (numerator + denominator - 1) / denominator;
         }

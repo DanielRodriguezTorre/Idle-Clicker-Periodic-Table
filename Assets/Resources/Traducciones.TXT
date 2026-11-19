@@ -42,7 +42,7 @@ staff.engineers	Ingenieros: {0:N0}	Engineers: {0:N0}	Ingenieure: {0:N0}	Ingeniø
 staff.hire_researcher	Contratar investigador	Hire researcher	Forscher einstellen	Ansæt forsker	Recruter un chercheur	Assumi ricercatore
 staff.hire_engineer	Contratar ingeniero	Hire engineer	Ingenieur einstellen	Ansæt ingeniør	Recruter un ingénieur	Assumi ingegnere
 staff.next_price	Siguiente contratación: {0:N0}	Next hire: {0:N0}	Nächste Einstellung: {0:N0}	Næste ansættelse: {0:N0}	Prochain recrutement : {0:N0}	Prossima assunzione: {0:N0}
-staff.upkeep	Mantenimiento total: {0:N0}/s	Total upkeep: {0:N0}/s	Gesamter Unterhalt: {0:N0}/s	Samlet vedligehold: {0:N0}/s	Entretien total : {0:N0}/s	Mantenimento totale: {0:N0}/s
+staff.upkeep	Coste total: {0:N0}/s	Total cost: {0:N0}/s	Gesamtkosten: {0:N0}/s	Samlet pris: {0:N0}/s	Coût total : {0:N0}/s	Costo totale: {0:N0}/s
 staff.room_upkeep	Mantenimiento: {0:N0}/s	Upkeep: {0:N0}/s	Unterhalt: {0:N0}/s	Vedligehold: {0:N0}/s	Entretien : {0:N0}/s	Mantenimento: {0:N0}/s
 staff.working	Personal con financiación	Staff funded	Personal finanziert	Personale finansieret	Personnel financé	Personale finanziato
 staff.unfunded	Producción detenida: falta dinero	Production stopped: not enough money	Produktion gestoppt: Geld fehlt	Produktion stoppet: mangler penge	Production arrêtée : fonds insuffisants	Produzione ferma: denaro insufficiente
@@ -56,3 +56,28 @@ color.deuteranopia	Deuteranopia	Deuteranopia	Deuteranopie	Deuteranopi	Deutérano
 color.tritanopia	Tritanopia	Tritanopia	Tritanopie	Tritanopi	Tritanopie	Tritanopia
 save.error	No se ha podido guardar la partida.	The game could not be saved.	Das Spiel konnte nicht gespeichert werden.	Spillet kunne ikke gemmes.	La partie n'a pas pu être sauvegardée.	Impossibile salvare la partita.
 save.corrupt	No se ha podido cargar la partida guardada. Puedes iniciar una nueva partida.	The saved game could not be loaded. You can start a new game.	Der Spielstand konnte nicht geladen werden. Du kannst ein neues Spiel beginnen.	Det gemte spil kunne ikke indlæses. Du kan starte et nyt spil.	La sauvegarde n'a pas pu être chargée. Vous pouvez commencer une nouvelle partie.	Impossibile caricare la partita salvata. Puoi iniziare una nuova partita.
+research.list_title	Descubrimientos	Discoveries	Entdeckungen	Opdagelser	Découvertes	Scoperte
+engineering.list_title	Fabricación	Manufacturing	Herstellung	Fremstilling	Fabrication	Fabbricazione
+research.1	Automatización básica	Basic automation	Grundlegende Automatisierung	Grundlæggende automatisering	Automatisation de base	Automazione di base
+research.2	Automatización mejorada	Improved automation	Verbesserte Automatisierung	Forbedret automatisering	Automatisation améliorée	Automazione migliorata
+research.3	Automatización avanzada	Advanced automation	Fortgeschrittene Automatisierung	Avanceret automatisering	Automatisation avancée	Automazione avanzata
+research.4	Automatización industrial	Industrial automation	Industrielle Automatisierung	Industriel automatisering	Automatisation industrielle	Automazione industriale
+research.new_notice	Se han hecho nuevos descubrimientos científicos.	New scientific discoveries have been made.	Neue wissenschaftliche Entdeckungen wurden gemacht.	Der er gjort nye videnskabelige opdagelser.	De nouvelles découvertes scientifiques ont été faites.	Sono state fatte nuove scoperte scientifiche.
+research.cost	Ciencia: {0:N0}	Science: {0:N0}	Wissenschaft: {0:N0}	Videnskab: {0:N0}	Science : {0:N0}	Scienza: {0:N0}
+research.description	Permite fabricar una máquina que genera {0:N0} de dinero por segundo.	Unlocks a machine that generates {0:N0} money per second.	Ermöglicht eine Maschine, die {0:N0} Geld pro Sekunde erzeugt.	Låser op for en maskine, der giver {0:N0} penge pr. sekund.	Débloque une machine qui génère {0:N0} d'argent par seconde.	Sblocca una macchina che genera {0:N0} di denaro al secondo.
+research.completed	Investigado	Researched	Erforscht	Udforsket	Recherché	Ricercato
+research.available	Investigar	Research	Erforschen	Udforsk	Rechercher	Ricerca
+research.previous	Requiere la investigación anterior	Requires the previous research	Vorherige Forschung erforderlich	Kræver den forrige forskning	Recherche précédente requise	Richiede la ricerca precedente
+research.insufficient	Falta ciencia	Not enough science	Nicht genug Wissenschaft	Ikke nok videnskab	Science insuffisante	Scienza insufficiente
+engineering.cost	Dinero: {0:N0} · Ingenio: {1:N0}	Money: {0:N0} · Ingenuity: {1:N0}	Geld: {0:N0} · Erfindergeist: {1:N0}	Penge: {0:N0} · Opfindsomhed: {1:N0}	Argent : {0:N0} · Ingéniosité : {1:N0}	Denaro: {0:N0} · Ingegno: {1:N0}
+engineering.description	Genera {0:N0} de dinero por segundo. El clic manual equivale a la producción automática total.	Generates {0:N0} money per second. Each manual click equals the total automatic production.	Erzeugt {0:N0} Geld pro Sekunde. Jeder manuelle Klick entspricht der gesamten automatischen Produktion.	Giver {0:N0} penge pr. sekund. Hvert manuelt klik svarer til den samlede automatiske produktion.	Génère {0:N0} d'argent par seconde. Chaque clic manuel vaut la production automatique totale.	Genera {0:N0} di denaro al secondo. Ogni clic manuale vale la produzione automatica totale.
+engineering.count	Compradas: {0:N0}	Owned: {0:N0}	Gekauft: {0:N0}	Købt: {0:N0}	Achetées : {0:N0}	Acquistate: {0:N0}
+economy.click_rule	El clic equivale al total automático por segundo, con un mínimo de 1.	Each click equals the total automatic income per second, with a minimum of 1.	Jeder Klick entspricht dem gesamten automatischen Einkommen pro Sekunde, mindestens 1.	Hvert klik svarer til den samlede automatiske indtægt pr. sekund, mindst 1.	Chaque clic vaut le revenu automatique total par seconde, avec un minimum de 1.	Ogni clic vale il guadagno automatico totale al secondo, con un minimo di 1.
+staff.research_running	Investigación activa	Research active	Forschung aktiv	Forskning aktiv	Recherche active	Ricerca attiva
+staff.research_paused	Investigación detenida	Research stopped	Forschung angehalten	Forskning stoppet	Recherche arrêtée	Ricerca sospesa
+staff.engineering_running	Ingeniería activa	Engineering active	Ingenieurwesen aktiv	Ingeniørarbejde aktivt	Ingénierie active	Ingegneria attiva
+staff.engineering_paused	Ingeniería detenida	Engineering stopped	Ingenieurwesen angehalten	Ingeniørarbejde stoppet	Ingénierie arrêtée	Ingegneria sospesa
+staff.paused	Trabajo detenido	Work stopped	Arbeit angehalten	Arbejdet stoppet	Travail arrêté	Lavoro sospeso
+staff.researchers_upkeep	Investigadores: {0:N0} · Coste: {1:N0}/s	Researchers: {0:N0} · Cost: {1:N0}/s	Forscher: {0:N0} · Kosten: {1:N0}/s	Forskere: {0:N0} · Pris: {1:N0}/s	Chercheurs : {0:N0} · Coût : {1:N0}/s	Ricercatori: {0:N0} · Costo: {1:N0}/s
+staff.engineers_upkeep	Ingenieros: {0:N0} · Coste: {1:N0}/s	Engineers: {0:N0} · Cost: {1:N0}/s	Ingenieure: {0:N0} · Kosten: {1:N0}/s	Ingeniører: {0:N0} · Pris: {1:N0}/s	Ingénieurs : {0:N0} · Coût : {1:N0}/s	Ingegneri: {0:N0} · Costo: {1:N0}/s
+research.empty	Obtén más financiación para hacer nuevos descubrimientos	Obtain more funding to make new discoveries	Sichere mehr Finanzierung, um neue Entdeckungen zu machen	Skaf mere finansiering for at gøre nye opdagelser	Obtiens plus de financement pour faire de nouvelles découvertes	Ottieni più finanziamenti per fare nuove scoperte

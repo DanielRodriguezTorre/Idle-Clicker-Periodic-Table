@@ -4,25 +4,17 @@ using UnityEngine.UI;
 
 namespace IdleClickerPeriodicTable.Presentation
 {
-    /// <summary>
-    /// Controla los botones del inicio y el aviso que sale antes de reemplazar una partida.
-    /// </summary>
+    /// <summary>Controla los botones del inicio y el aviso que sale antes de reemplazar una partida.</summary>
     public sealed class StartMenu : MonoBehaviour
     {
-        /// <summary>
-        /// Continuar solo aparece cuando hay un archivo de partida guardado.
-        /// </summary>
+        /// <summary>Continuar solo aparece cuando hay un archivo de partida guardado.</summary>
         public Button continueButton;
-        /// <summary>
-        /// El panel de confirmación que ya está montado en la escena.
-        /// </summary>
+        /// <summary>El panel de confirmación que ya está montado en la escena.</summary>
         public GameObject confirmationPanel;
-        /// <summary>
-        /// El texto que avisa si la partida no se puede leer o guardar.
-        /// </summary>
+        /// <summary>El texto que avisa si la partida no se puede leer o guardar.</summary>
         public LocalizedText errorMessage;
 
-        private void Start()
+        void Start()
         {
             continueButton.gameObject.SetActive(GameSaveStore.Exists);
             confirmationPanel.SetActive(false);
@@ -38,9 +30,7 @@ namespace IdleClickerPeriodicTable.Presentation
                 ConfirmNewGame();
         }
 
-        /// <summary>
-        /// Se empieza de cero y se entra en Economía solo si la partida nueva se ha podido guardar.
-        /// </summary>
+        /// <summary>Se empieza de cero y se entra en Economía solo si la partida nueva se ha podido guardar.</summary>
         public void ConfirmNewGame()
         {
             confirmationPanel.SetActive(false);
@@ -51,14 +41,10 @@ namespace IdleClickerPeriodicTable.Presentation
                 ShowError("save.error");
         }
 
-        /// <summary>
-        /// Se cierra el aviso y la partida anterior queda como estaba.
-        /// </summary>
+        /// <summary>Se cierra el aviso y la partida anterior queda como estaba.</summary>
         public void CancelNewGame() => confirmationPanel.SetActive(false);
 
-        /// <summary>
-        /// Se recupera la partida y se entra en la tabla periódica, si no se puede leer, aparece el error.
-        /// </summary>
+        /// <summary>Se recupera la partida y se entra en la tabla periódica, si no se puede leer, aparece el error.</summary>
         public void ContinueGame()
         {
             if (GameSession.Instance.ContinueGame()) 
@@ -67,9 +53,7 @@ namespace IdleClickerPeriodicTable.Presentation
                 ShowError("save.corrupt");
         }
 
-        /// <summary>
-        /// Se intenta guardar la partida en marcha antes de cerrar el juego.
-        /// </summary>
+        /// <summary>Se intenta guardar la partida en marcha antes de cerrar el juego.</summary>
         public void Quit()
         {
             GameSession.Instance.Save();
@@ -80,7 +64,7 @@ namespace IdleClickerPeriodicTable.Presentation
             #endif
         }
 
-        private void ShowError(string key)
+        void ShowError(string key)
         {
             errorMessage.key = key;
             errorMessage.gameObject.SetActive(true);

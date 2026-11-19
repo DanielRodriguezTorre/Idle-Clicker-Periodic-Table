@@ -2,55 +2,44 @@ using System;
 
 namespace IdleClickerPeriodicTable.Core
 {
-    /// <summary>
-    /// Los recursos y el progreso viajan con la partida, aunque cambie la pantalla.
-    /// </summary>
+    /// <summary>Los recursos y el progreso viajan con la partida, aunque cambie la pantalla.</summary>
     [Serializable]
     public sealed class GameState
     {
-        /// <summary>
-        /// El dinero disponible para comprar y pagar el mantenimiento, siempre en unidades enteras.
-        /// </summary>
+        /// <summary>El dinero disponible para comprar y pagar el mantenimiento, siempre en unidades enteras.</summary>
         public long money;
 
-        /// <summary>
-        /// Ciencia acumulada por el trabajo de los investigadores.
-        /// </summary>
+        /// <summary>Ciencia acumulada por el trabajo de los investigadores.</summary>
         public long science;
 
-        /// <summary>
-        /// Ingenio acumulado por el trabajo de los ingenieros.
-        /// </summary>
+        /// <summary>Ingenio acumulado por el trabajo de los ingenieros.</summary>
         public long ingenuity;
 
-        /// <summary>
-        /// Investigadores contratados, cada uno puede producir una unidad de ciencia por segundo.
-        /// </summary>
+        /// <summary>Investigadores contratados, cada uno puede producir una unidad de ciencia por segundo.</summary>
         public int researchers;
 
-        /// <summary>
-        /// Ingenieros contratados, cada uno puede producir una unidad de ingenio por segundo.
-        /// </summary>
+        /// <summary>Ingenieros contratados, cada uno puede producir una unidad de ingenio por segundo.</summary>
         public int engineers;
 
-        /// <summary>
-        /// Investigaciones desbloqueadas hasta ahora, entre cero y cuatro.
-        /// </summary>
+        /// <summary>Los investigadores pausados conservan su contratación, pero no cobran ni producen.</summary>
+        public bool researchersPaused;
+
+        /// <summary>Los ingenieros pausados conservan su contratación, pero no cobran ni producen.</summary>
+        public bool engineersPaused;
+
+        /// <summary>Los modelos descubiertos no se pierden aunque después se gaste la ciencia que permitió encontrarlos.</summary>
+        public int discoveryLevel;
+
+        /// <summary>Investigaciones desbloqueadas hasta ahora, entre cero y cuatro.</summary>
         public int researchLevel;
 
-        /// <summary>
-        /// Cantidad de máquinas disponibles en cada una de las cuatro familias.
-        /// </summary>
+        /// <summary>Cantidad de máquinas disponibles en cada una de las cuatro familias.</summary>
         public int[] machines = new int[4];
 
-        /// <summary>
-        /// Lo que se multiplica la producción de cada familia, de uno a cinco.
-        /// </summary>
+        /// <summary>Lo que se multiplica la producción de cada familia, de uno a cinco.</summary>
         public int[] machineLevels = { 1, 1, 1, 1 };
 
-        /// <summary>
-        /// Se ponen los datos en orden por si el guardado trae valores fuera de rango o le faltan familias.
-        /// </summary>
+        /// <summary>Se ponen los datos en orden por si el guardado trae valores fuera de rango o le faltan familias.</summary>
         public void Normalize()
         {
             money = Math.Max(0L, money);
@@ -59,6 +48,7 @@ namespace IdleClickerPeriodicTable.Core
             researchers = Math.Max(0, researchers);
             engineers = Math.Max(0, engineers);
             researchLevel = Math.Max(0, Math.Min(4, researchLevel));
+            discoveryLevel = Math.Max(researchLevel, Math.Min(4, discoveryLevel));
 
             // Aunque el guardado venga incompleto, tiene que quedar sitio para las cuatro familias.
             if (machines == null)

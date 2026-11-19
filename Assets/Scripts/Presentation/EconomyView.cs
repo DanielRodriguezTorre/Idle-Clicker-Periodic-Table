@@ -2,30 +2,24 @@ using UnityEngine;
 
 namespace IdleClickerPeriodicTable.Presentation
 {
-    /// <summary>
-    /// Muestra las cuentas de la economía y anima los cuatro textos flotantes que ya trae la escena.
-    /// </summary>
+    /// <summary>Muestra las cuentas de la economía y anima los cuatro textos flotantes que ya trae la escena.</summary>
     public sealed class EconomyView : MonoBehaviour
     {
-        /// <summary>
-        /// El texto que muestra cuánto vale ahora un clic.
-        /// </summary>
+        /// <summary>El texto que muestra cuánto vale ahora un clic.</summary>
         public LocalizedText clickValue;
-        /// <summary>
-        /// Los textos con la cantidad y la producción de cada una de las cuatro familias.
-        /// </summary>
+        /// <summary>Los textos con la cantidad y la producción de cada una de las cuatro familias.</summary>
         public LocalizedText[] machineCounts, machineRates;
-        /// <summary>
-        /// Un texto flotante por familia para mostrar lo que acaba de producir.
-        /// </summary>
+        /// <summary>Los paneles que ya trae la escena, solo aparecen cuando hay máquinas de su familia.</summary>
+        public GameObject[] machinePanels;
+        /// <summary>Un texto flotante por familia para mostrar lo que acaba de producir.</summary>
         public LocalizedText[] floatingTexts;
         // Estos grupos permiten desvanecer los textos sin desactivar sus objetos.
         public CanvasGroup[] floatingGroups;
-        private readonly Vector2[] startingPositions = new Vector2[4];
-        private readonly float[] remainingTimes = new float[4];
-        private GameSession session;
+        readonly Vector2[] startingPositions = new Vector2[4];
+        readonly float[] remainingTimes = new float[4];
+        GameSession session;
 
-        private void OnEnable()
+        void OnEnable()
         {
             session = GameSession.Instance;
 
@@ -44,7 +38,7 @@ namespace IdleClickerPeriodicTable.Presentation
             Refresh();
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             if (session == null) 
                 return;
@@ -53,29 +47,28 @@ namespace IdleClickerPeriodicTable.Presentation
             session.ProductionTick -= ShowProduction;
         }
 
-        /// <summary>
-        /// El clic se pasa a la sesión, que sabe cuánto dinero toca sumar.
-        /// </summary>
+        /// <summary>El clic se pasa a la sesión, que sabe cuánto dinero toca sumar.</summary>
         public void Click() => session.Click();
 
-        /// <summary>
-        /// Se muestran el valor del clic y las cuentas actuales de cada familia.
-        /// </summary>
-        private void Refresh()
+        /// <summary>Se muestran el valor del clic y las cuentas actuales de cada familia.</summary>
+        void Refresh()
         {
             clickValue.SetArguments(session.Economy.ClickValue);
 
             for (int index = 0; index < 4; index++)
             {
+                bool visible = session.State.machines[index] > 0;
+
+                if (machinePanels[index].activeSelf != visible)
+                    machinePanels[index].SetActive(visible);
+
                 machineCounts[index].SetArguments(session.State.machines[index]);
                 machineRates[index].SetArguments(session.Economy.GetMachineIncome(index));
             }
         }
 
-        /// <summary>
-        /// Sale un texto con lo ganado por cada familia que haya producido dinero.
-        /// </summary>
-        private void ShowProduction()
+        /// <summary>Sale un texto con lo ganado por cada familia que haya producido dinero.</summary>
+        void ShowProduction()
         {
             for (int index = 0; index < 4; index++)
             {
@@ -92,10 +85,8 @@ namespace IdleClickerPeriodicTable.Presentation
             }
         }
 
-        /// <summary>
-        /// Los textos van subiendo y desapareciendo poco a poco durante los 0,9 segundos de la animación.
-        /// </summary>
-        private void Update()
+        /// <summary>Los textos van subiendo y desapareciendo poco a poco durante los 0,9 segundos de la animación.</summary>
+        void Update()
         {
             for (int index = 0; index < 4; index++)
             {

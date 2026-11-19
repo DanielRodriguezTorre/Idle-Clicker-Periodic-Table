@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eed6ce049de9b3e49a4fd1eecc704f85, type: 3}
   m_Name: GameBalance
   m_EditorClassIdentifier: IdleClicker.Core::IdleClickerPeriodicTable.Core.GameBalance
-  baseRates:
-  - 1
-  - 10
-  - 100
-  - 1000
+  baseRates: 01000000000000000a000000000000006400000000000000e803000000000000
+  researchCosts: 6400000000000000102700000000000040420f000000000000e1f50500000000
+  machineCosts: 6400000000000000102700000000000040420f000000000000e1f50500000000
   staffInitialHireCost: 10
   staffHireIncreasePercent: 15
   staffInitialUpkeep: 1

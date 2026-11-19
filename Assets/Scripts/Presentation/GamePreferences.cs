@@ -1,66 +1,53 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using IdleClickerPeriodicTable.Core;
 using UnityEngine;
 
 namespace IdleClickerPeriodicTable.Presentation
 {
-    /// <summary>
-    /// El idioma, el tamaño del texto y los colores se guardan aparte de la partida.
-    /// </summary>
+    /// <summary>Las opciones de presentación y el último estado de trabajo se guardan en configuración.</summary>
     public static class GamePreferences
     {
-        private const string LanguagePreference = "Presentation.Language";
-        private const string TextSizePreference = "Presentation.TextSize";
-        private const string ColorPreference = "Presentation.ColorMode";
+        const string LanguagePreference = "Presentation.Language";
+        const string TextSizePreference = "Presentation.TextSize";
+        const string ColorPreference = "Presentation.ColorMode";
+        const string ResearchersPausedPreference = "Staff.ResearchersPaused";
+        const string EngineersPausedPreference = "Staff.EngineersPaused";
         // Este orden tiene que coincidir con las columnas del archivo de traducciones y los botones de idioma.
-        private static readonly string[] LanguageCodes = { "es", "en", "de", "da", "fr", "it" };
-        private static readonly float[] TextScales = { 0.85f, 1f, 1.2f };
-        private static readonly Dictionary<string, string[]> Translations = new Dictionary<string, string[]>(StringComparer.Ordinal);
-        private static bool loaded;
-        private static int languageIndex;
-        private static int textSizeIndex = 1;
-        private static int colorMode;
+        static readonly string[] LanguageCodes = { "es", "en", "de", "da", "fr", "it" };
+        static readonly float[] TextScales = { 0.85f, 1f, 1.2f };
+        static readonly Dictionary<string, string[]> Translations = new(StringComparer.Ordinal);
+        static bool loaded;
+        static int languageIndex;
+        static int textSizeIndex = 1;
+        static int colorMode;
 
-        /// <summary>
-        /// Se avisa a las pantallas cuando cambia alguna opción.
-        /// </summary>
+        /// <summary>Se avisa a las pantallas cuando cambia alguna opción.</summary>
         public static event Action Changed;
 
-        /// <summary>
-        /// El idioma elegido: español, inglés, alemán, danés, francés o italiano, en ese orden.
-        /// </summary>
+        /// <summary>El idioma elegido: español, inglés, alemán, danés, francés o italiano, en ese orden.</summary>
         public static int LanguageIndex { get { Load(); return languageIndex; } }
 
-        /// <summary>
-        /// El tamaño elegido: cero para pequeño, uno para normal y dos para grande.
-        /// </summary>
+        /// <summary>El tamaño elegido: cero para pequeño, uno para normal y dos para grande.</summary>
         public static int TextSizeIndex { get { Load(); return textSizeIndex; } }
 
-        /// <summary>
-        /// La paleta elegida: normal, protanopia, deuteranopia o tritanopia, en ese orden.
-        /// </summary>
+        /// <summary>La paleta elegida: normal, protanopia, deuteranopia o tritanopia, en ese orden.</summary>
         public static int ColorMode { get { Load(); return colorMode; } }
 
-        /// <summary>
-        /// Cuánto se agranda o reduce el texto respecto al tamaño del diseño.
-        /// </summary>
+        /// <summary>Cuánto se agranda o reduce el texto respecto al tamaño del diseño.</summary>
         public static float TextScale { get { Load(); return TextScales[textSizeIndex]; } }
 
-        /// <summary>
-        /// Se limpia lo cargado al entrar en Play, aunque Unity no recargue el dominio.
-        /// </summary>
+        /// <summary>Se limpia lo cargado al entrar en Play, aunque Unity no recargue el dominio.</summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetSession()
+        static void ResetSession()
         {
             loaded = false;
             Translations.Clear();
             Changed = null;
         }
 
-        /// <summary>
-        /// Las opciones y las traducciones se cargan una sola vez, las siguientes llamadas no repiten el trabajo.
-        /// </summary>
+        /// <summary>Las opciones y las traducciones se cargan una sola vez, las siguientes llamadas no repiten el trabajo.</summary>
         public static void Load()
         {
             if (loaded) 
@@ -73,9 +60,7 @@ namespace IdleClickerPeriodicTable.Presentation
             LoadTranslations();
         }
 
-        /// <summary>
-        /// Se cambia el idioma y se guarda para la próxima vez.
-        /// </summary>
+        /// <summary>Se cambia el idioma y se guarda para la próxima vez.</summary>
         /// <param name="index">La posición del idioma en la lista de seis idiomas.</param>
         public static void SetLanguage(int index)
         {
@@ -83,9 +68,7 @@ namespace IdleClickerPeriodicTable.Presentation
             SetPreference(ref languageIndex, Mathf.Clamp(index, 0, LanguageCodes.Length - 1), LanguagePreference);
         }
 
-        /// <summary>
-        /// Se cambia el tamaño de los textos y se guarda la elección.
-        /// </summary>
+        /// <summary>Se cambia el tamaño de los textos y se guarda la elección.</summary>
         /// <param name="index">Cero para pequeño, uno para normal y dos para grande.</param>
         public static void SetTextSize(int index)
         {
@@ -93,9 +76,7 @@ namespace IdleClickerPeriodicTable.Presentation
             SetPreference(ref textSizeIndex, Mathf.Clamp(index, 0, TextScales.Length - 1), TextSizePreference);
         }
 
-        /// <summary>
-        /// Se cambia la paleta de la interfaz y se guarda la elección.
-        /// </summary>
+        /// <summary>Se cambia la paleta de la interfaz y se guarda la elección.</summary>
         /// <param name="index">Cero mantiene los colores normales, del uno al tres están las alternativas.</param>
         public static void SetColorMode(int index)
         {
@@ -103,9 +84,24 @@ namespace IdleClickerPeriodicTable.Presentation
             SetPreference(ref colorMode, Mathf.Clamp(index, 0, 3), ColorPreference);
         }
 
-        /// <summary>
-        /// El texto se busca en el idioma elegido, los números también usan el formato de ese idioma.
-        /// </summary>
+        /// <summary>Se recuperan las pausas de una partida continuada, si no hay opciones guardadas se conservan sus datos.</summary>
+        /// <param name="state">Partida cargada cuyos controles deben recuperar su estado.</param>
+        public static void LoadStaffWork(GameState state)
+        {
+            state.researchersPaused = PlayerPrefs.GetInt(ResearchersPausedPreference, state.researchersPaused ? 1 : 0) != 0;
+            state.engineersPaused = PlayerPrefs.GetInt(EngineersPausedPreference, state.engineersPaused ? 1 : 0) != 0;
+        }
+
+        /// <summary>Las pausas de ambas profesiones también se guardan en las opciones al guardar la partida activa.</summary>
+        /// <param name="state">Estado de trabajo que se acaba de guardar.</param>
+        public static void SaveStaffWork(GameState state)
+        {
+            PlayerPrefs.SetInt(ResearchersPausedPreference, state.researchersPaused ? 1 : 0);
+            PlayerPrefs.SetInt(EngineersPausedPreference, state.engineersPaused ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>El texto se busca en el idioma elegido, los números también usan el formato de ese idioma.</summary>
         /// <param name="key">La clave tal como aparece en el archivo de traducciones.</param>
         /// <param name="args">Los valores que van en los huecos del texto, si los hay.</param>
         /// <returns>El texto traducido, o la clave misma si no hay traducción.</returns>
@@ -134,10 +130,8 @@ namespace IdleClickerPeriodicTable.Presentation
             }
         }
 
-        /// <summary>
-        /// Solo se guarda y se avisa si la opción ha cambiado de verdad.
-        /// </summary>
-        private static void SetPreference(ref int field, int value, string preferenceKey)
+        /// <summary>Solo se guarda y se avisa si la opción ha cambiado de verdad.</summary>
+        static void SetPreference(ref int field, int value, string preferenceKey)
         {
             if (field == value) 
                 return;
@@ -148,10 +142,8 @@ namespace IdleClickerPeriodicTable.Presentation
             Changed?.Invoke();
         }
 
-        /// <summary>
-        /// El archivo de traducciones lleva una columna por idioma, separada con tabuladores.
-        /// </summary>
-        private static void LoadTranslations()
+        /// <summary>El archivo de traducciones lleva una columna por idioma, separada con tabuladores.</summary>
+        static void LoadTranslations()
         {
             TextAsset table = Resources.Load<TextAsset>("Traducciones");
 
