@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Xml;
 using IdleClickerPeriodicTable.Core;
 using UnityEngine;
 
@@ -8,13 +11,16 @@ namespace IdleClickerPeriodicTable
     /// <summary>La partida se lee y se guarda sin añadir ganancias por el tiempo que el juego estuvo cerrado.</summary>
     public static class GameSaveStore
     {
+        /// <summary>La partida se guarda con los saldos como texto, sin recortar los números grandes.</summary>
+        static readonly DataContractJsonSerializer Serializer = new(typeof(GameState));
+
         /// <summary>La partida vive en este archivo, dentro de la carpeta de datos que proporciona Unity.</summary>
         public static string FilePath => Path.Combine(Application.persistentDataPath, "partida.json");
 
         /// <summary>Indica si hay un archivo guardado, que exista no significa que esté bien.</summary>
         public static bool Exists => File.Exists(FilePath);
 
-        /// <summary>Se intenta recuperar la partida y se ponen sus valores en orden antes de usarla.</summary>
+        /// <summary>Se intenta recuperar la partida tal como quedó guardada.</summary>
         public static bool TryLoad(out GameState state)
         {
             state = null;
@@ -23,22 +29,12 @@ namespace IdleClickerPeriodicTable
                 if (!Exists) 
                     return false;
 
-                string json = File.ReadAllText(FilePath);
-
-                // Una comprobación rápida para descartar archivos vacíos o que no parecen una partida.
-                if (string.IsNullOrWhiteSpace(json) || !json.Contains("\"money\"")) 
-                    return false;
-
-                state = JsonUtility.FromJson<GameState>(json);
-
-                if (state == null) 
-                    return false;
-
-                state.Normalize();
-
-                return true;
+                using var file = File.OpenRead(FilePath);
+                state = (GameState)Serializer.ReadObject(file);
+                return state != null;
             }
-            catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException || exception is ArgumentException)
+            catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException
+                || exception is ArgumentException || exception is SerializationException || exception is FormatException || exception is XmlException)
             {
                 Debug.LogWarning("No se pudo leer la partida: " + GetErrorReason(exception) + " (código " + exception.HResult + ").");
                 return false;
@@ -52,7 +48,8 @@ namespace IdleClickerPeriodicTable
             {
                 Directory.CreateDirectory(Application.persistentDataPath);
                 string temporaryPath = FilePath + ".tmp";
-                File.WriteAllText(temporaryPath, JsonUtility.ToJson(state, true));
+                using (var file = File.Create(temporaryPath))
+                    Serializer.WriteObject(file, state);
 
                 // El guardado anterior solo se sustituye cuando el temporal ya está escrito entero.
                 if (Exists) 
@@ -62,7 +59,7 @@ namespace IdleClickerPeriodicTable
 
                 return true;
             }
-            catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException)
+            catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException || exception is SerializationException)
             {
                 Debug.LogWarning("No se pudo guardar la partida: " + GetErrorReason(exception) + " (código " + exception.HResult + ").");
                 return false;
@@ -75,7 +72,7 @@ namespace IdleClickerPeriodicTable
             if (exception is UnauthorizedAccessException)
                 return "no hay permisos para acceder al archivo";
 
-            if (exception is ArgumentException)
+            if (exception is ArgumentException || exception is SerializationException || exception is FormatException || exception is XmlException)
                 return "el archivo o su contenido no es válido";
 
             return "se ha producido un error de entrada o salida";

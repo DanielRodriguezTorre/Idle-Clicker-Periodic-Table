@@ -1,11 +1,26 @@
+using IdleClickerPeriodicTable.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace IdleClickerPeriodicTable.Presentation
 {
-    /// <summary>Las máquinas ya investigadas se fabrican desde las filas que trae la escena.</summary>
+    /// <summary>La fabricación y las mejoras se muestran con las filas que ya trae la escena.</summary>
     public sealed class EngineeringListView : MonoBehaviour
     {
+        /// <summary>Los componentes de cada fila de mejora, ya preparada en la lista.</summary>
+        [System.Serializable]
+        sealed class UpgradeRow
+        {
+            /// <summary>El botón de compra, su objeto es también la fila completa.</summary>
+            public Button button = null;
+
+            /// <summary>Los textos traducibles con la producción y el coste de la mejora.</summary>
+            public LocalizedText description = null, cost = null;
+        }
+
+        const int MachineCount = 4;
+        const int UpgradeCount = MachineCount * AutomationService.UpgradesPerMachine;
+
         /// <summary>Las cuatro filas de la lista desplazable de Ingeniería.</summary>
         public GameObject[] rows;
 
@@ -15,6 +30,9 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <summary>Los textos con el coste, la producción por máquina y la cantidad de cada familia.</summary>
         public LocalizedText[] costs, descriptions, counts;
 
+        /// <summary>Las cuatro mejoras de cada familia van seguidas, del nivel 2 al 5.</summary>
+        [SerializeField] UpgradeRow[] upgrades;
+
         GameSession session;
 
         /// <summary>Las filas se actualizan con los cambios de la partida mientras la lista está activa.</summary>
@@ -22,13 +40,14 @@ namespace IdleClickerPeriodicTable.Presentation
         {
             session = GameSession.Instance;
 
-            if (session == null || !Complete(rows) || !Complete(buttons) || !Complete(costs) || !Complete(descriptions) || !Complete(counts))
+            if (session == null)
             {
-                Debug.LogError("Faltan referencias de la lista de ingeniería.", this);
+                Debug.LogError("La lista de ingeniería necesita una sesión de partida.", this);
                 enabled = false;
                 return;
             }
 
+            PrepareUpgradeTexts();
             session.Changed += Refresh;
             Refresh();
         }
@@ -44,14 +63,35 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <param name="index">Familia de la máquina, de cero a tres.</param>
         public void Buy(int index)
         {
-            if (session != null && index >= 0 && index < 4)
+            if (session != null && index >= 0 && index < MachineCount)
                 session.BuyAutomationMachine(index);
         }
 
-        /// <summary>Solo se muestran los modelos investigados, los botones indican si se pueden comprar.</summary>
+        /// <summary>Se pide la mejora que corresponde al botón pulsado.</summary>
+        /// <param name="slot">Posición de la mejora en el listado serializado.</param>
+        public void BuyUpgrade(int slot)
+        {
+            if (session != null && slot >= 0 && slot < UpgradeCount)
+                session.BuyAutomationUpgrade(slot / AutomationService.UpgradesPerMachine, UpgradeLevel(slot));
+        }
+
+        /// <summary>Los textos de cada mejora muestran su familia, su nivel y los valores ajustados en el balance.</summary>
+        void PrepareUpgradeTexts()
+        {
+            for (int slot = 0; slot < UpgradeCount; slot++)
+            {
+                int index = slot / AutomationService.UpgradesPerMachine;
+                int level = UpgradeLevel(slot);
+                long cost = session.Automation.UpgradeCost(index, level);
+                upgrades[slot].description.SetLocalizedArguments($"machine.{index + 1}", level, session.Automation.MachineRate(index, level));
+                upgrades[slot].cost.SetArguments(cost, cost);
+            }
+        }
+
+        /// <summary>Se actualizan los modelos que ya se pueden fabricar y las mejoras que quedan por comprar.</summary>
         void Refresh()
         {
-            for (int index = 0; index < 4; index++)
+            for (int index = 0; index < MachineCount; index++)
             {
                 bool visible = index < session.State.researchLevel;
 
@@ -67,19 +107,28 @@ namespace IdleClickerPeriodicTable.Presentation
                 counts[index].SetArguments(session.State.machines[index]);
                 buttons[index].interactable = session.IsPlaying && session.Automation.CanBuyMachine(index);
             }
+
+            RefreshUpgrades();
         }
 
-        /// <summary>Se comprueba que estén asignadas las cuatro referencias, sin buscar objetos en la escena.</summary>
-        static bool Complete<T>(T[] references) where T : Object
+        /// <summary>Aparecen las mejoras pendientes de los modelos investigados, solo se puede comprar la siguiente si alcanzan los recursos.</summary>
+        void RefreshUpgrades()
         {
-            if (references == null || references.Length != 4)
-                return false;
+            for (int slot = 0; slot < UpgradeCount; slot++)
+            {
+                int index = slot / AutomationService.UpgradesPerMachine;
+                int level = UpgradeLevel(slot);
+                Button button = upgrades[slot].button;
+                bool visible = index < session.State.researchLevel && level > session.State.machineLevels[index];
 
-            for (int index = 0; index < references.Length; index++)
-                if (references[index] == null)
-                    return false;
+                button.interactable = visible && session.IsPlaying && session.Automation.CanBuyUpgrade(index, level);
 
-            return true;
+                if (button.gameObject.activeSelf != visible)
+                    button.gameObject.SetActive(visible);
+            }
         }
+
+        /// <summary>La posición dentro del grupo de cuatro indica el nivel de producción de la mejora.</summary>
+        static int UpgradeLevel(int slot) => slot % AutomationService.UpgradesPerMachine + 2;
     }
 }

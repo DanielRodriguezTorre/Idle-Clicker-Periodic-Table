@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Numerics;
 using IdleClickerPeriodicTable.Core;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace IdleClickerPeriodicTable.Presentation
         const string ColorPreference = "Presentation.ColorMode";
         const string ResearchersPausedPreference = "Staff.ResearchersPaused";
         const string EngineersPausedPreference = "Staff.EngineersPaused";
+        const int ScientificNotationThreshold = 1_000_000;
         // Este orden tiene que coincidir con las columnas del archivo de traducciones y los botones de idioma.
         static readonly string[] LanguageCodes = { "es", "en", "de", "da", "fr", "it" };
         static readonly float[] TextScales = { 0.85f, 1f, 1.2f };
@@ -120,7 +122,8 @@ namespace IdleClickerPeriodicTable.Presentation
 
             try
             {
-                return string.Format(CultureInfo.GetCultureInfo(LanguageCodes[languageIndex]), template, args);
+                var culture = CultureInfo.GetCultureInfo(LanguageCodes[languageIndex]);
+                return string.Format(culture, template, FormatLargeNumbers(args, culture));
             }
             catch (FormatException)
             {
@@ -128,6 +131,31 @@ namespace IdleClickerPeriodicTable.Presentation
                 Debug.LogError("Formato de traducción no válido: " + key);
                 return template;
             }
+        }
+
+        /// <summary>Los enteros mayores de un millón se muestran en notación científica, sin cambiar los argumentos originales.</summary>
+        static object[] FormatLargeNumbers(object[] args, CultureInfo culture)
+        {
+            object[] formatted = null;
+
+            for (int index = 0; index < args.Length; index++)
+            {
+                bool exceedsThreshold = args[index] switch
+                {
+                    int amount => amount > ScientificNotationThreshold,
+                    long amount => amount > ScientificNotationThreshold,
+                    BigInteger amount => amount > ScientificNotationThreshold,
+                    _ => false
+                };
+
+                if (!exceedsThreshold)
+                    continue;
+
+                formatted ??= (object[])args.Clone();
+                formatted[index] = ((IFormattable)args[index]).ToString("0.00E+0", culture);
+            }
+
+            return formatted ?? args;
         }
 
         /// <summary>Solo se guarda y se avisa si la opción ha cambiado de verdad.</summary>

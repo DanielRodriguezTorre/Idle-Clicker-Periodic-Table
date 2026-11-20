@@ -23,7 +23,7 @@ namespace IdleClickerPeriodicTable.Presentation
 
         GameSession session;
 
-        /// <summary>Se comprueban las referencias y se escuchan los cambios de la partida mientras la lista está activa.</summary>
+        /// <summary>La lista escucha los cambios de la partida mientras está activa.</summary>
         void OnEnable()
         {
             session = GameSession.Instance;

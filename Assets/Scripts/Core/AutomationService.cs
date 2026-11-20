@@ -1,25 +1,27 @@
 using System;
+using System.Numerics;
 
 namespace IdleClickerPeriodicTable.Core
 {
-    /// <summary>Aquí se descubren e investigan los modelos en orden y se fabrican sus máquinas, sin depender de la interfaz.</summary>
+    /// <summary>Aquí se llevan la investigación, la fabricación y las mejoras de cada familia de automatizadores.</summary>
     public sealed class AutomationService
     {
+        /// <summary>Cada familia tiene cuatro mejoras que se compran en orden, después del nivel base 1.</summary>
+        public const int UpgradesPerMachine = 4;
+
         /// <summary>La partida con sus recursos, descubrimientos, investigaciones y máquinas.</summary>
         readonly GameState state;
 
         /// <summary>Los costes y la producción de los cuatro modelos, ajustados en el proyecto.</summary>
         readonly GameBalance balance;
 
-        /// <summary>Se conecta la automatización a la partida y se ponen en orden los datos de las cuatro familias.</summary>
+        /// <summary>Se conecta la automatización a los datos de la partida y al balance.</summary>
         /// <param name="state">Los datos de la partida ya creada o cargada.</param>
         /// <param name="balance">Costes y producción de los modelos.</param>
-        /// <exception cref="ArgumentNullException">Falta la configuración de automatizadores.</exception>
         public AutomationService(GameState state, GameBalance balance)
         {
             this.state = state;
-            this.balance = balance ?? throw new ArgumentNullException(nameof(balance), "No se ha proporcionado la configuración de automatizadores.");
-            state.Normalize();
+            this.balance = balance;
         }
 
         /// <summary>Se descubren los modelos cuando alcanza la ciencia disponible, los descubrimientos no se pierden después.</summary>
@@ -93,10 +95,50 @@ namespace IdleClickerPeriodicTable.Core
             return true;
         }
 
+        /// <summary>Solo se puede comprar la siguiente mejora de una familia investigada, si alcanzan el dinero y el ingenio.</summary>
+        /// <param name="index">Familia del automatizador, de cero a tres.</param>
+        /// <param name="level">Nivel de producción que se quiere comprar, de dos a cinco.</param>
+        /// <returns>Si se puede comprar la mejora en el estado actual de la partida.</returns>
+        public bool CanBuyUpgrade(int index, int level)
+        {
+            if (index < 0 || index >= 4 || index >= state.researchLevel || level != state.machineLevels[index] + 1)
+                return false;
+
+            long cost = UpgradeCost(index, level);
+            return cost > 0 && state.money >= cost && state.ingenuity >= cost;
+        }
+
+        /// <summary>Se cobra la mejora una sola vez y se aumenta la producción de todas las máquinas de esa familia.</summary>
+        /// <param name="index">Familia del automatizador, de cero a tres.</param>
+        /// <param name="level">Nivel que se quiere aplicar.</param>
+        /// <returns>Si se ha aplicado y cobrado la mejora.</returns>
+        public bool BuyUpgrade(int index, int level)
+        {
+            if (!CanBuyUpgrade(index, level))
+                return false;
+
+            long cost = UpgradeCost(index, level);
+            state.money -= cost;
+            state.ingenuity -= cost;
+            state.machineLevels[index] = level;
+            return true;
+        }
+
+        /// <summary>Lo que cuesta la mejora tanto en dinero como en ingenio, o cero si ese nivel no está disponible.</summary>
+        /// <param name="index">Familia del automatizador, de cero a tres.</param>
+        /// <param name="level">Nivel de producción que se quiere comprar, de dos a cinco.</param>
+        public long UpgradeCost(int index, int level)
+        {
+            if (level < 2 || level > UpgradesPerMachine + 1)
+                return 0;
+
+            // Cada familia ocupa cuatro posiciones, el nivel 2 es la primera mejora de su grupo.
+            return ReadCost(balance.upgradeCosts, index * UpgradesPerMachine + level - 2);
+        }
+
         /// <summary>La ciencia necesaria para descubrir un modelo es también lo que cuesta investigarlo.</summary>
         /// <param name="index">Índice del modelo, de cero a tres.</param>
         /// <returns>Coste en ciencia, o cero si su configuración falta o no es positiva.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">El índice no corresponde a un modelo.</exception>
         public long ResearchCost(int index)
         {
             return ReadCost(balance.researchCosts, index);
@@ -105,7 +147,6 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>Se consulta cuánto dinero y cuánto ingenio cuesta fabricar una unidad de un modelo.</summary>
         /// <param name="index">Índice del modelo, de cero a tres.</param>
         /// <returns>Coste de cada recurso, o cero si su configuración falta o no es positiva.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">El índice no corresponde a un modelo.</exception>
         public long MachineCost(int index)
         {
             return ReadCost(balance.machineCosts, index);
@@ -114,33 +155,30 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>Lo que produce una máquina en un segundo, contando las mejoras de su familia.</summary>
         /// <param name="index">Índice del modelo, de cero a tres.</param>
         /// <returns>Ingreso unitario, sin multiplicar por la cantidad fabricada, o cero si falta la tasa.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">El índice no corresponde a un modelo.</exception>
-        public long MachineRate(int index)
+        public BigInteger MachineRate(int index)
         {
-            ValidateIndex(index);
+            return MachineRate(index, state.machineLevels[index]);
+        }
 
-            if (balance.baseRates == null || index >= balance.baseRates.Length)
+        /// <summary>Se calcula lo que produciría una máquina a ese nivel para mostrar el resultado de la mejora.</summary>
+        /// <param name="index">Familia del automatizador, de cero a tres.</param>
+        /// <param name="level">Multiplicador que se aplica a su producción base.</param>
+        /// <returns>Ingreso unitario por segundo, o cero si falta la producción base.</returns>
+        public BigInteger MachineRate(int index, int level)
+        {
+            if (level <= 0 || balance.baseRates == null || index >= balance.baseRates.Length)
                 return 0;
 
-            return ResourceMath.MultiplyCapped(balance.baseRates[index], state.machineLevels[index]);
+            return (BigInteger)Math.Max(0L, balance.baseRates[index]) * level;
         }
 
         /// <summary>Un coste que falta o no es válido no debe permitir comprar gratis ni ganar recursos al pagar.</summary>
         static long ReadCost(long[] costs, int index)
         {
-            ValidateIndex(index);
-
             if (costs == null || index >= costs.Length || costs[index] <= 0)
                 return 0;
 
             return costs[index];
-        }
-
-        /// <summary>El índice tiene que corresponder a una de las cuatro familias.</summary>
-        static void ValidateIndex(int index)
-        {
-            if (index < 0 || index >= 4)
-                throw new ArgumentOutOfRangeException(nameof(index), "El índice del automatizador debe estar entre 0 y 3.");
         }
     }
 }

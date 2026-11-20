@@ -17,6 +17,7 @@ namespace IdleClickerPeriodicTable.Presentation
         public int baseFontSize = 24;
 
         object[] arguments;
+        string firstArgumentKey;
 
         /// <summary>Al activar el texto, se empieza a escuchar cambios de opciones y se actualiza de entrada.</summary>
         void OnEnable()
@@ -42,7 +43,19 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <param name="args">Los valores que se mantienen hasta recibir otros, incluso si cambia el idioma.</param>
         public void SetArguments(params object[] args)
         {
+            firstArgumentKey = null;
             arguments = args;
+            Refresh();
+        }
+
+        /// <summary>El primer argumento es una traducción que se vuelve a consultar cuando cambia el idioma.</summary>
+        /// <param name="argumentKey">Clave de la traducción que ocupa el hueco cero.</param>
+        /// <param name="args">Valores que se colocan a continuación.</param>
+        public void SetLocalizedArguments(string argumentKey, params object[] args)
+        {
+            firstArgumentKey = argumentKey;
+            arguments = new object[args.Length + 1];
+            args.CopyTo(arguments, 1);
             Refresh();
         }
 
@@ -52,8 +65,10 @@ namespace IdleClickerPeriodicTable.Presentation
             if (target == null) 
                 return;
 
+            if (firstArgumentKey != null)
+                arguments[0] = GamePreferences.Translate(firstArgumentKey);
+
             target.text = GamePreferences.Translate(key, arguments);
-            // El tamaño se calcula siempre desde la base para que los cambios no se acumulen.
             target.fontSize = Mathf.Max(1, Mathf.RoundToInt(baseFontSize * GamePreferences.TextScale));
         }
     }

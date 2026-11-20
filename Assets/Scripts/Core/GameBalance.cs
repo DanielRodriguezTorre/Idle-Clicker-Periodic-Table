@@ -15,6 +15,15 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>Lo que cuesta fabricar una unidad de cada modelo, se paga esa cantidad tanto en dinero como en ingenio.</summary>
         public long[] machineCosts = { 100, 10000, 1000000, 100000000 };
 
+        /// <summary>Lo que cuesta cada mejora en dinero y en ingenio, con los niveles 2 a 5 de cada familia seguidos.</summary>
+        public long[] upgradeCosts =
+        {
+            500, 1_500, 3_000, 5_000,
+            50_000, 150_000, 300_000, 500_000,
+            5_000_000, 15_000_000, 30_000_000, 50_000_000,
+            500_000_000, 1_500_000_000, 3_000_000_000, 5_000_000_000
+        };
+
         /// <summary>Lo que cuesta contratar al primer empleado de cada profesión.</summary>
         public long staffInitialHireCost = 10;
 

@@ -18,14 +18,6 @@ namespace IdleClickerPeriodicTable.Presentation
         void OnEnable()
         {
             session = GameSession.Instance;
-
-            if (session == null || group == null)
-            {
-                Debug.LogError("Faltan referencias del aviso de descubrimientos.", this);
-                enabled = false;
-                return;
-            }
-
             remaining = 0;
             group.alpha = 0;
             group.blocksRaycasts = false;

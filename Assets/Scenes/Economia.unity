@@ -2772,8 +2772,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: IdleClicker.Game::IdleClickerPeriodicTable.Presentation.LocalizedText
   target: {fileID: 953233179}
-  key: machine.3
-  baseFontSize: 23
+  key: machine.level_name
+  baseFontSize: 20
 --- !u!114 &953233178
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2811,7 +2811,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 23
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -2822,7 +2822,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: machine.3
+  m_Text: machine.level_name
 --- !u!222 &953233180
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3910,8 +3910,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: IdleClicker.Game::IdleClickerPeriodicTable.Presentation.LocalizedText
   target: {fileID: 1442955500}
-  key: machine.4
-  baseFontSize: 23
+  key: machine.level_name
+  baseFontSize: 20
 --- !u!114 &1442955499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3949,7 +3949,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 23
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -3960,7 +3960,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: machine.4
+  m_Text: machine.level_name
 --- !u!222 &1442955501
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4608,6 +4608,11 @@ MonoBehaviour:
   - {fileID: 2138159014}
   - {fileID: 1862105827}
   - {fileID: 1021301395}
+  machineNames:
+  - {fileID: 1773241702}
+  - {fileID: 1914881291}
+  - {fileID: 953233177}
+  - {fileID: 1442955498}
   machinePanels:
   - {fileID: 682386429}
   - {fileID: 1882195}
@@ -4789,8 +4794,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: IdleClicker.Game::IdleClickerPeriodicTable.Presentation.LocalizedText
   target: {fileID: 1773241704}
-  key: machine.1
-  baseFontSize: 23
+  key: machine.level_name
+  baseFontSize: 20
 --- !u!114 &1773241703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4828,7 +4833,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 23
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -4839,7 +4844,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: machine.1
+  m_Text: machine.level_name
 --- !u!222 &1773241705
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5011,8 +5016,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: IdleClicker.Game::IdleClickerPeriodicTable.Presentation.LocalizedText
   target: {fileID: 1914881293}
-  key: machine.2
-  baseFontSize: 23
+  key: machine.level_name
+  baseFontSize: 20
 --- !u!114 &1914881292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5050,7 +5055,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 23
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -5061,7 +5066,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: machine.2
+  m_Text: machine.level_name
 --- !u!222 &1914881294
 CanvasRenderer:
   m_ObjectHideFlags: 0

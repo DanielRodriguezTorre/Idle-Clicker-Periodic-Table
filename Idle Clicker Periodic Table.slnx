@@ -1,4 +1,3 @@
-﻿<Solution>
+<Solution>
   <Project Path="IdleClicker.Game.csproj" />
-  <Project Path="IdleClicker.Core.csproj" />
 </Solution>

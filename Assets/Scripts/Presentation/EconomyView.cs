@@ -1,4 +1,5 @@
 using UnityEngine;
+using BigInteger = System.Numerics.BigInteger;
 
 namespace IdleClickerPeriodicTable.Presentation
 {
@@ -9,6 +10,8 @@ namespace IdleClickerPeriodicTable.Presentation
         public LocalizedText clickValue;
         /// <summary>Los textos con la cantidad y la producción de cada una de las cuatro familias.</summary>
         public LocalizedText[] machineCounts, machineRates;
+        /// <summary>Los nombres de las familias con el nivel de producción aplicado.</summary>
+        [SerializeField] LocalizedText[] machineNames;
         /// <summary>Los paneles que ya trae la escena, solo aparecen cuando hay máquinas de su familia.</summary>
         public GameObject[] machinePanels;
         /// <summary>Un texto flotante por familia para mostrar lo que acaba de producir.</summary>
@@ -17,6 +20,7 @@ namespace IdleClickerPeriodicTable.Presentation
         public CanvasGroup[] floatingGroups;
         readonly Vector2[] startingPositions = new Vector2[4];
         readonly float[] remainingTimes = new float[4];
+        readonly int[] shownMachineLevels = new int[4];
         GameSession session;
 
         void OnEnable()
@@ -58,6 +62,13 @@ namespace IdleClickerPeriodicTable.Presentation
             for (int index = 0; index < 4; index++)
             {
                 bool visible = session.State.machines[index] > 0;
+                int level = session.State.machineLevels[index];
+
+                if (visible && shownMachineLevels[index] != level)
+                {
+                    machineNames[index].SetLocalizedArguments($"machine.{index + 1}", level);
+                    shownMachineLevels[index] = level;
+                }
 
                 if (machinePanels[index].activeSelf != visible)
                     machinePanels[index].SetActive(visible);
@@ -72,7 +83,7 @@ namespace IdleClickerPeriodicTable.Presentation
         {
             for (int index = 0; index < 4; index++)
             {
-                long income = session.Economy.GetMachineIncome(index);
+                BigInteger income = session.Economy.GetMachineIncome(index);
 
                 if (income <= 0) 
                     continue;

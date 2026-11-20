@@ -230,6 +230,15 @@ namespace IdleClickerPeriodicTable
             return true;
         }
 
+        /// <summary>Se cobra y se aplica la mejora, después se avisa a las pantallas para que actualicen sus datos.</summary>
+        /// <param name="index">Familia del automatizador, de cero a tres.</param>
+        /// <param name="level">Nivel de producción que se quiere comprar.</param>
+        public void BuyAutomationUpgrade(int index, int level)
+        {
+            if (IsPlaying && Automation.BuyUpgrade(index, level))
+                Changed?.Invoke();
+        }
+
         /// <summary>El aviso pendiente se entrega una sola vez a la pantalla activa, aunque haya cambiado la escena.</summary>
         public bool TakeDiscoveryNotice()
         {

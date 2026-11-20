@@ -42,13 +42,6 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <summary>El gráfico escucha los cambios de opciones mientras está activo.</summary>
         void OnEnable()
         {
-            if (target == null)
-            {
-                Debug.LogError("AccessibleGraphic necesita una referencia asignada a un componente Graphic.", this);
-                enabled = false;
-                return;
-            }
-
             GamePreferences.Changed += Refresh;
             Refresh();
         }
@@ -62,25 +55,16 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <summary>Se aplica la paleta elegida sin perder la luminosidad ni la transparencia del diseño.</summary>
         public void Refresh()
         {
-            if (target == null)
-                return;
+            if (target != null)
+                target.color = ResolveColor(GamePreferences.ColorMode);
+        }
 
-            int mode = GamePreferences.ColorMode;
-
+        /// <summary>Se usa el acento asignado o, en modo automático, se elige según el tono del diseño.</summary>
+        /// <param name="mode">Paleta elegida en las preferencias, con cero para el color original.</param>
+        Color ResolveColor(int mode)
+        {
             if (mode == 0)
-            {
-                target.color = normalColor;
-                return;
-            }
-
-            Color.RGBToHSV(normalColor, out float hue, out float saturation, out _);
-
-            // Los tonos casi grises se quedan como están, salvo que tengan un acento asignado a mano.
-            if (paletteIndex < 0 && saturation < 0.15f)
-            {
-                target.color = normalColor;
-                return;
-            }
+                return normalColor;
 
             Color[] palette = mode switch
             {
@@ -89,12 +73,21 @@ namespace IdleClickerPeriodicTable.Presentation
                 _ => TritanopiaPalette
             };
 
-            int accentIndex = paletteIndex >= 0
-                ? Mathf.Clamp(paletteIndex, 0, palette.Length - 1)
-                : Mathf.Min(palette.Length - 1, Mathf.FloorToInt(hue * palette.Length));
-            Color color = MatchLuminance(palette[accentIndex], normalColor);
+            int accentIndex = paletteIndex;
+
+            if (accentIndex < 0)
+            {
+                Color.RGBToHSV(normalColor, out float hue, out float saturation, out _);
+
+                if (saturation < 0.15f)
+                    return normalColor;
+
+                accentIndex = Mathf.FloorToInt(hue * palette.Length);
+            }
+
+            Color color = MatchLuminance(palette[Mathf.Clamp(accentIndex, 0, palette.Length - 1)], normalColor);
             color.a = normalColor.a;
-            target.color = color;
+            return color;
         }
 
         /// <summary>Se ajusta la luminosidad del acento para mantener el contraste del diseño original.</summary>

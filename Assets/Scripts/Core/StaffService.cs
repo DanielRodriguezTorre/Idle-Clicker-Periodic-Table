@@ -1,4 +1,3 @@
-using System;
 using System.Numerics;
 
 namespace IdleClickerPeriodicTable.Core
@@ -19,18 +18,16 @@ namespace IdleClickerPeriodicTable.Core
         long cachedHireBase, cachedUpkeepBase;
         int cachedHirePercent, cachedUpkeepPercent;
 
-        /// <summary>Los importes se guardan completos, aunque superen lo que cabe en los recursos de la partida.</summary>
+        /// <summary>Las cuentas de contratación y mantenimiento se reutilizan hasta que cambien las cantidades o los ajustes.</summary>
         BigInteger researcherCost, engineerCost, researcherUpkeep, engineerUpkeep;
 
-        /// <summary>Se conecta la plantilla a la partida y se ponen sus datos en orden antes de empezar.</summary>
+        /// <summary>Se conecta la plantilla a los datos de la partida y al balance.</summary>
         /// <param name="state">La partida ya creada o cargada sobre la que se harán las cuentas.</param>
         /// <param name="balance">Los ajustes de contratación y mantenimiento.</param>
-        /// <exception cref="ArgumentNullException">Faltan los ajustes de contratación y mantenimiento.</exception>
         public StaffService(GameState state, GameBalance balance)
         {
             this.state = state;
-            this.balance = balance ?? throw new ArgumentNullException(nameof(balance), "No se ha proporcionado la configuración del personal.");
-            state.Normalize();
+            this.balance = balance;
         }
 
         /// <summary>Lo que cuesta el siguiente investigador, se redondea hacia arriba solo al final de la cuenta.</summary>
@@ -67,8 +64,7 @@ namespace IdleClickerPeriodicTable.Core
             if (!CanHireResearcher)
                 return false;
 
-            // Si el precio cabe en el dinero disponible, también cabe en long al hacer el descuento.
-            state.money -= (long)researcherCost;
+            state.money -= researcherCost;
             state.researchers++;
             return true;
         }
@@ -80,7 +76,7 @@ namespace IdleClickerPeriodicTable.Core
             if (!CanHireEngineer)
                 return false;
 
-            state.money -= (long)engineerCost;
+            state.money -= engineerCost;
             state.engineers++;
             return true;
         }
@@ -93,13 +89,13 @@ namespace IdleClickerPeriodicTable.Core
             if (state.money < upkeep)
                 return;
 
-            state.money -= (long)upkeep;
+            state.money -= upkeep;
 
             if (!state.researchersPaused)
-                state.science = ResourceMath.AddCapped(state.science, state.researchers);
+                state.science += state.researchers;
 
             if (!state.engineersPaused)
-                state.ingenuity = ResourceMath.AddCapped(state.ingenuity, state.engineers);
+                state.ingenuity += state.engineers;
         }
 
         /// <summary>Las cuentas solo se repiten si cambia la cantidad de empleados o alguno de sus ajustes.</summary>
@@ -137,32 +133,22 @@ namespace IdleClickerPeriodicTable.Core
             if (percent == 0)
                 return initial;
 
-            // Por ejemplo, un aumento del 15 % se calcula como 115/100, sin pasar por decimales.
-            BigInteger numerator = initial * BigInteger.Pow((BigInteger)100 + percent, count);
-            BigInteger denominator = BigInteger.Pow(100, count);
-            return CeilingDivide(numerator, denominator);
+            BigInteger scale = BigInteger.Pow(100, count);
+            BigInteger growth = BigInteger.Pow(100L + percent, count);
+            return CeilingDivide(initial * growth, scale);
         }
 
-        /// <summary>Se suma lo que cuesta cada empleado, manteniendo exacta la progresión antes de redondear cada importe.</summary>
+        /// <summary>Se suma el mantenimiento de toda la profesión y se redondea el total hacia arriba una sola vez.</summary>
         static BigInteger CalculateUpkeep(int count, long initial, int percent)
         {
             if (percent == 0)
                 return (BigInteger)count * initial;
 
-            BigInteger total = BigInteger.Zero;
-            BigInteger numerator = initial;
-            BigInteger denominator = BigInteger.One;
-            BigInteger multiplier = (BigInteger)100 + percent;
+            BigInteger scale = BigInteger.Pow(100, count);
+            BigInteger growth = BigInteger.Pow(100L + percent, count);
 
-            // Redondear cada empleado no da siempre lo mismo que redondear la suma, por eso se suman uno a uno.
-            for (int index = 0; index < count; index++)
-            {
-                total += CeilingDivide(numerator, denominator);
-                numerator *= multiplier;
-                denominator *= 100;
-            }
-
-            return total;
+            // La suma geométrica es inicial × (factor^cantidad − 1) / (factor − 1).
+            return CeilingDivide((BigInteger)initial * 100 * (growth - scale), percent * scale);
         }
 
         /// <summary>Se divide y, si queda resto, se redondea hacia arriba sin usar decimales.</summary>
