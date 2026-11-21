@@ -4,6 +4,7 @@ nav.economy	Economía	Economy	Wirtschaft	Økonomi	Économie	Economia
 nav.research	Investigación	Research	Forschung	Forskning	Recherche	Ricerca
 nav.engineering	Ingeniería	Engineering	Ingenieurwesen	Ingeniørarbejde	Ingénierie	Ingegneria
 nav.table	Tabla periódica	Periodic table	Periodensystem	Det periodiske system	Tableau périodique	Tavola periodica
+periodic_table.locked	Investiga más para descubrir	Research more to discover	Forsche weiter, um das Element zu entdecken	Forsk mere for at opdage	Fais plus de recherches pour le découvrir	Fai altre ricerche per scoprirlo
 nav.production	Producción	Production	Produktion	Produktion	Production	Produzione
 nav.settings	Opciones	Settings	Einstellungen	Indstillinger	Options	Impostazioni
 nav.home	Menú principal	Main menu	Hauptmenü	Hovedmenu	Menu principal	Menu principale
