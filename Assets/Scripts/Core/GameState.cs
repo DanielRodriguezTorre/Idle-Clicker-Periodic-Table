@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.Serialization;
 
@@ -64,5 +65,9 @@ namespace IdleClickerPeriodicTable.Core
 
         /// <summary>Lo que se multiplica la producción de cada familia, de uno a cinco.</summary>
         [DataMember(IsRequired = true)] public int[] machineLevels = { 1, 1, 1, 1 };
+
+        /// <summary>El progreso de cada plano, puede faltar al cargar una partida anterior a los elementos.</summary>
+        [DataMember(EmitDefaultValue = false)]
+        public Dictionary<string, ProductionProgress> productionProgress;
     }
 }

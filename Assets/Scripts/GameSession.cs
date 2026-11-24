@@ -31,6 +31,9 @@ namespace IdleClickerPeriodicTable
         /// <summary>Aquí se llevan los descubrimientos, la investigación y la fabricación de automatizadores.</summary>
         public AutomationService Automation { get; private set; }
 
+        /// <summary>Aquí se llevan los descubrimientos de los elementos y el desarrollo de sus máquinas.</summary>
+        public ProductionResearchService ProductionResearch { get; private set; }
+
         /// <summary>Indica si hay una partida en marcha.</summary>
         public bool IsPlaying { get; private set; }
 
@@ -85,7 +88,8 @@ namespace IdleClickerPeriodicTable
             Economy = new(State, balance);
             Staff = new(State, balance);
             Automation = new(State, balance);
-            discoveryNoticePending = Automation.CheckDiscoveries();
+            ProductionResearch = new(State);
+            discoveryNoticePending = CheckDiscoveries();
         }
 
         void Update()
@@ -102,15 +106,7 @@ namespace IdleClickerPeriodicTable
                 // Primero entra el dinero de las máquinas, después se comprueba si alcanza para el personal.
                 Economy.Tick();
                 Staff.Tick();
-                bool discovered = Automation.CheckDiscoveries();
-
-                if (discovered)
-                    discoveryNoticePending = true;
-
-                Changed?.Invoke();
-
-                if (discovered)
-                    NewScientificDiscoveries?.Invoke();
+                PublishChanges(CheckDiscoveries());
 
                 ProductionTick?.Invoke();
             }
@@ -132,6 +128,7 @@ namespace IdleClickerPeriodicTable
             Economy = new(State, balance);
             Staff = new(State, balance);
             Automation = new(State, balance);
+            ProductionResearch = new(State);
             discoveryNoticePending = false;
             secondTimer = 0;
             saveTimer = 0;
@@ -156,7 +153,8 @@ namespace IdleClickerPeriodicTable
             Economy = new(State, balance);
             Staff = new(State, balance);
             Automation = new(State, balance);
-            discoveryNoticePending = Automation.CheckDiscoveries();
+            ProductionResearch = new(State);
+            discoveryNoticePending = CheckDiscoveries();
             secondTimer = 0;
             saveTimer = 0;
             IsPlaying = true;
@@ -216,8 +214,45 @@ namespace IdleClickerPeriodicTable
             if (!IsPlaying || !Automation.Research(index))
                 return false;
 
-            Changed?.Invoke();
+            PublishChanges(ProductionResearch.CheckDiscoveries());
             return true;
+        }
+
+        /// <summary>Se completa la investigación de producción y se comprueba si permite descubrir algo más.</summary>
+        public bool ResearchProduction(ProductionDefinition entry)
+        {
+            if (!IsPlaying || !ProductionResearch.Research(entry))
+                return false;
+
+            PublishChanges(ProductionResearch.CheckDiscoveries());
+            return true;
+        }
+
+        /// <summary>Se fabrica una unidad del modelo investigado y se actualiza la cantidad en las pantallas.</summary>
+        public void BuildProductionMachine(ProductionDefinition entry)
+        {
+            if (IsPlaying && ProductionResearch.Build(entry))
+                Changed?.Invoke();
+        }
+
+        /// <summary>Se compra el siguiente nivel de un modelo de producción y se avisa a las pantallas.</summary>
+        public void UpgradeProductionMachine(ProductionDefinition entry, int level)
+        {
+            if (IsPlaying && ProductionResearch.Upgrade(entry, level))
+                Changed?.Invoke();
+        }
+
+        /// <summary>Se usa | para revisar los dos catálogos, aunque el primero ya haya encontrado novedades.</summary>
+        bool CheckDiscoveries() => Automation.CheckDiscoveries() | ProductionResearch.CheckDiscoveries();
+
+        /// <summary>Se actualizan las pantallas y las novedades científicas se agrupan en un solo aviso.</summary>
+        void PublishChanges(bool discovered)
+        {
+            discoveryNoticePending |= discovered;
+            Changed?.Invoke();
+
+            if (discovered)
+                NewScientificDiscoveries?.Invoke();
         }
 
         /// <summary>Se compra una máquina ya investigada, pagando dinero e ingenio.</summary>

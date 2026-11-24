@@ -109,6 +109,13 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: IdleClicker.Game::IdleClickerPeriodicTable.Presentation.PeriodicTableCell
   tooltip: {fileID: 0}
+  elementId:
+  atomicNumber: 0
+  oxidationStates:
+  numberLabel: {fileID: 100100013}
+  symbolLabel: {fileID: 100100023}
+  nameLabel: {fileID: 100100033}
+  oxidationLabel: {fileID: 100100043}
 --- !u!1 &100100010
 GameObject:
   m_ObjectHideFlags: 0

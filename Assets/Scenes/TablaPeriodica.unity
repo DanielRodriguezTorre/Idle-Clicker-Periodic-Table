@@ -1070,6 +1070,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Elemento 001
       objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: elementId
+      value: H
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: atomicNumber
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: oxidationStates
+      value: +1, −1
+      objectReference: {fileID: 0}
     - target: {fileID: 100100002, guid: 683c1949758448f298857f2f411682fa, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -748
@@ -1418,6 +1430,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Elemento 007
       objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: elementId
+      value: N
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: atomicNumber
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: oxidationStates
+      value: +5, +4, +3, +2, −3
+      objectReference: {fileID: 0}
     - target: {fileID: 100100002, guid: 683c1949758448f298857f2f411682fa, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 484
@@ -1475,6 +1499,18 @@ PrefabInstance:
     - target: {fileID: 100100001, guid: 683c1949758448f298857f2f411682fa, type: 3}
       propertyPath: m_Name
       value: Elemento 008
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: elementId
+      value: O
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: atomicNumber
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: oxidationStates
+      value: −1, −2
       objectReference: {fileID: 0}
     - target: {fileID: 100100002, guid: 683c1949758448f298857f2f411682fa, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1939,6 +1975,18 @@ PrefabInstance:
     - target: {fileID: 100100001, guid: 683c1949758448f298857f2f411682fa, type: 3}
       propertyPath: m_Name
       value: Elemento 016
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: elementId
+      value: S
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: atomicNumber
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 100100006, guid: 683c1949758448f298857f2f411682fa, type: 3}
+      propertyPath: oxidationStates
+      value: +6, +4, +2, −2
       objectReference: {fileID: 0}
     - target: {fileID: 100100002, guid: 683c1949758448f298857f2f411682fa, type: 3}
       propertyPath: m_AnchoredPosition.x
