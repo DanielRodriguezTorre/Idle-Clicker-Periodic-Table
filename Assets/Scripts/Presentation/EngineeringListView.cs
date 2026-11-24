@@ -1,47 +1,48 @@
+using System;
 using IdleClickerPeriodicTable.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace IdleClickerPeriodicTable.Presentation
 {
-    /// <summary>Presenta la fabricación y las mejoras en las filas precolocadas del mismo listado.</summary>
+    /// <summary>La fabricación y las mejoras comparten las filas que ya están preparadas en la escena.</summary>
     public sealed class EngineeringListView : MonoBehaviour
     {
-        /// <summary>Botón y textos de una mejora preparada en el listado.</summary>
-        [System.Serializable]
+        /// <summary>El botón y los textos de cada mejora, ya preparada en la lista.</summary>
+        [Serializable]
         sealed class UpgradeRow
         {
             public Button button;
             public LocalizedText description, cost;
         }
 
-        /// <summary>Una máquina de producción y sus tres mejoras precolocadas consecutivamente.</summary>
-        [System.Serializable]
+        /// <summary>Cada modelo de producción tiene su fila y tres mejoras colocadas a continuación.</summary>
+        [Serializable]
         sealed class ProductionRow
         {
-            /// <summary>Identidad que vincula las referencias de escena con el catálogo y el guardado.</summary>
+            /// <summary>El identificador enlaza la fila con el catálogo y el progreso guardado.</summary>
             public string id;
             public Button button;
             public LocalizedText name, description, cost, count;
             public UpgradeRow[] upgrades;
 
-            [System.NonSerialized] public ProductionDefinition entry;
-            [System.NonSerialized] public int shownLevel;
-            [System.NonSerialized] public int shownCount;
+            [NonSerialized] public ProductionDefinition entry;
+            [NonSerialized] public int shownLevel;
+            [NonSerialized] public int shownCount;
         }
 
         const int MachineCount = 4;
         const int UpgradeCount = MachineCount * AutomationService.UpgradesPerMachine;
         const int ProductionUpgradeCount = ProductionResearchService.MaxLevel - 1;
 
-        /// <summary>Filas y botones de los cuatro automatizadores económicos.</summary>
+        /// <summary>Las filas y los botones de los cuatro automatizadores económicos.</summary>
         public GameObject[] rows;
         public Button[] buttons;
 
-        /// <summary>Coste, producción y cantidad de cada familia de automatizadores.</summary>
+        /// <summary>Los textos con el coste, la producción y la cantidad de cada familia de automatizadores.</summary>
         public LocalizedText[] costs, descriptions, counts;
 
-        /// <summary>Mejoras económicas, agrupadas por familia y nivel.</summary>
+        /// <summary>Las mejoras de automatizadores van agrupadas por familia y nivel.</summary>
         [SerializeField] UpgradeRow[] upgrades;
 
         /// <summary>Modelos de los cuatro elementos que aparecen en el mismo contenido vertical.</summary>
@@ -49,7 +50,7 @@ namespace IdleClickerPeriodicTable.Presentation
 
         GameSession session;
 
-        /// <summary>Prepara el listado y escucha la sesión mientras la pantalla está activa.</summary>
+        /// <summary>Se prepara la lista y se escuchan los cambios de la sesión mientras la pantalla está activa.</summary>
         void OnEnable()
         {
             session = GameSession.Instance;
@@ -62,35 +63,35 @@ namespace IdleClickerPeriodicTable.Presentation
             Refresh();
         }
 
-        /// <summary>Deja de escuchar a la sesión al salir de la pantalla.</summary>
+        /// <summary>Se deja de escuchar a la sesión al salir de la pantalla.</summary>
         void OnDisable()
         {
             if (session != null)
                 session.Changed -= Refresh;
         }
 
-        /// <summary>Compra una unidad del automatizador vinculado al botón.</summary>
+        /// <summary>Se compra una unidad del automatizador que corresponde al botón.</summary>
         public void Buy(int index)
         {
             if (session != null && index >= 0 && index < MachineCount)
                 session.BuyAutomationMachine(index);
         }
 
-        /// <summary>Compra la mejora económica vinculada al botón.</summary>
+        /// <summary>Se compra la mejora de automatización que corresponde al botón.</summary>
         public void BuyUpgrade(int slot)
         {
             if (session != null && slot >= 0 && slot < UpgradeCount)
                 session.BuyAutomationUpgrade(slot / AutomationService.UpgradesPerMachine, AutomationUpgradeLevel(slot));
         }
 
-        /// <summary>Compra una unidad del modelo de producción vinculado al botón.</summary>
+        /// <summary>Se compra una unidad del modelo de producción que corresponde al botón.</summary>
         public void BuyProduction(int index)
         {
             if (session != null && index >= 0 && index < productionRows.Length && productionRows[index].entry is ProductionDefinition entry)
                 session.BuildProductionMachine(entry);
         }
 
-        /// <summary>Compra el nivel correspondiente a una de las tres mejoras de producción de la fila.</summary>
+        /// <summary>Se compra el nivel que corresponde a una de las tres mejoras de producción de la fila.</summary>
         public void BuyProductionUpgrade(int slot)
         {
             int index = slot / ProductionUpgradeCount;
@@ -99,7 +100,7 @@ namespace IdleClickerPeriodicTable.Presentation
                 session.UpgradeProductionMachine(entry, slot % ProductionUpgradeCount + 2);
         }
 
-        /// <summary>Configura la producción y el precio de cada mejora económica.</summary>
+        /// <summary>Los textos de cada mejora de automatización muestran su producción y su precio.</summary>
         void PrepareAutomationUpgrades()
         {
             for (int slot = 0; slot < UpgradeCount; slot++)
@@ -112,7 +113,7 @@ namespace IdleClickerPeriodicTable.Presentation
             }
         }
 
-        /// <summary>Actualiza las filas económicas y de producción en el mismo listado.</summary>
+        /// <summary>Se actualizan las filas de automatizadores y producción dentro de la misma lista.</summary>
         void Refresh()
         {
             for (int index = 0; index < MachineCount; index++)
@@ -134,7 +135,7 @@ namespace IdleClickerPeriodicTable.Presentation
             RefreshProduction();
         }
 
-        /// <summary>Muestra las mejoras económicas pendientes de las familias investigadas.</summary>
+        /// <summary>Aparecen las mejoras pendientes de las familias de automatizadores ya investigadas.</summary>
         void RefreshAutomationUpgrades()
         {
             for (int slot = 0; slot < UpgradeCount; slot++)
@@ -149,7 +150,7 @@ namespace IdleClickerPeriodicTable.Presentation
             }
         }
 
-        /// <summary>Muestra cada modelo de producción investigado y actualiza su nivel y cantidad.</summary>
+        /// <summary>Aparecen los modelos de producción investigados, con su nivel y su cantidad al día.</summary>
         void RefreshProduction()
         {
             var research = session.ProductionResearch;
@@ -197,7 +198,7 @@ namespace IdleClickerPeriodicTable.Presentation
             }
         }
 
-        /// <summary>Asigna los nombres y costes fijos cuando aparece por primera vez el modelo.</summary>
+        /// <summary>Los nombres y los costes fijos se preparan cuando el modelo aparece por primera vez.</summary>
         static void PrepareProductionRow(ProductionRow row)
         {
             row.name.key = row.entry.NameKey;
@@ -213,7 +214,7 @@ namespace IdleClickerPeriodicTable.Presentation
             }
         }
 
-        /// <summary>Muestra las mejoras pendientes y habilita la siguiente si se puede pagar.</summary>
+        /// <summary>Aparecen las mejoras pendientes, solo se puede comprar la siguiente si alcanzan los recursos.</summary>
         void RefreshProductionUpgrades(ProductionRow machine, int currentLevel)
         {
             var research = session.ProductionResearch;

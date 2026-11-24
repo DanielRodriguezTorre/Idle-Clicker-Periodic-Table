@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace IdleClickerPeriodicTable.Core
@@ -109,12 +110,12 @@ namespace IdleClickerPeriodicTable.Core
 
         static readonly Dictionary<string, ProductionDefinition> ById = IndexEntries();
 
-        /// <summary>Resuelve la identidad estable de una fila serializada del catálogo.</summary>
+        /// <summary>Se busca la entrada de una fila por su identificador, sin depender de su posición en la lista.</summary>
         public static ProductionDefinition Find(string id) => id != null && ById.TryGetValue(id, out var entry) ? entry : null;
 
         static Dictionary<string, ProductionDefinition> IndexEntries()
         {
-            var index = new Dictionary<string, ProductionDefinition>(Entries.Count, System.StringComparer.Ordinal);
+            var index = new Dictionary<string, ProductionDefinition>(Entries.Count, StringComparer.Ordinal);
 
             foreach (ProductionDefinition entry in Entries)
                 index.Add(entry.Id, entry);

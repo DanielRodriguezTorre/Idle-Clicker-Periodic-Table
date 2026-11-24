@@ -2,6 +2,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace IdleClickerPeriodicTable.Presentation
 {
     /// <summary>Controla los botones del inicio y el aviso que sale antes de reemplazar una partida.</summary>
@@ -60,7 +64,7 @@ namespace IdleClickerPeriodicTable.Presentation
             Application.Quit();
             // En el editor no se cierra Unity, solo se sale del modo Play.
             #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
             #endif
         }
 
