@@ -36,11 +36,11 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>Lo que cuesta el siguiente ingeniero, la cantidad de investigadores no cambia su precio.</summary>
         public BigInteger EngineerCost { get { RefreshCache(); return engineerCost; } }
 
-        /// <summary>Lo que cuesta mantener a los investigadores activos, es cero mientras estén pausados.</summary>
-        public BigInteger ResearcherUpkeep { get { RefreshCache(); return state.researchersPaused ? BigInteger.Zero : researcherUpkeep; } }
+        /// <summary>Lo que cuesta mantener a los investigadores con su nivel actual, es cero mientras estén pausados.</summary>
+        public BigInteger ResearcherUpkeep { get { RefreshCache(); return state.researchersPaused ? BigInteger.Zero : researcherUpkeep * state.ResearchStaffLevel; } }
 
-        /// <summary>Lo que cuesta mantener a los ingenieros activos, es cero mientras estén pausados.</summary>
-        public BigInteger EngineerUpkeep { get { RefreshCache(); return state.engineersPaused ? BigInteger.Zero : engineerUpkeep; } }
+        /// <summary>Lo que cuesta mantener a los ingenieros con su nivel actual, es cero mientras estén pausados.</summary>
+        public BigInteger EngineerUpkeep { get { RefreshCache(); return state.engineersPaused ? BigInteger.Zero : engineerUpkeep * state.EngineeringStaffLevel; } }
 
         /// <summary>Lo que cuesta mantener durante un segundo a las profesiones que no estén pausadas.</summary>
         public BigInteger TotalUpkeep { get { return ResearcherUpkeep + EngineerUpkeep; } }
@@ -92,13 +92,13 @@ namespace IdleClickerPeriodicTable.Core
             state.money -= upkeep;
 
             if (!state.researchersPaused)
-                state.science += state.researchers;
+                state.science += (BigInteger)state.researchers * state.ResearchStaffLevel;
 
             if (!state.engineersPaused)
-                state.ingenuity += state.engineers;
+                state.ingenuity += (BigInteger)state.engineers * state.EngineeringStaffLevel;
         }
 
-        /// <summary>Las cuentas solo se repiten si cambia la cantidad de empleados o alguno de sus ajustes.</summary>
+        /// <summary>Se guardan las cuentas base si cambia el personal o sus ajustes, el nivel se multiplica al consultar el mantenimiento.</summary>
         void RefreshCache()
         {
             long hireBase = balance.staffInitialHireCost > 0 ? balance.staffInitialHireCost : 10;
@@ -138,7 +138,7 @@ namespace IdleClickerPeriodicTable.Core
             return CeilingDivide(initial * growth, scale);
         }
 
-        /// <summary>Se suma el mantenimiento de toda la profesión y se redondea el total hacia arriba una sola vez.</summary>
+        /// <summary>Se suma el mantenimiento base y se redondea el total hacia arriba, después se multiplicará por el nivel de la profesión.</summary>
         static BigInteger CalculateUpkeep(int count, long initial, int percent)
         {
             if (percent == 0)
@@ -152,9 +152,6 @@ namespace IdleClickerPeriodicTable.Core
         }
 
         /// <summary>Se divide y, si queda resto, se redondea hacia arriba sin usar decimales.</summary>
-        static BigInteger CeilingDivide(BigInteger numerator, BigInteger denominator)
-        {
-            return (numerator + denominator - 1) / denominator;
-        }
+        static BigInteger CeilingDivide(BigInteger numerator, BigInteger denominator) => (numerator + denominator - 1) / denominator;
     }
 }

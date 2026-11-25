@@ -18,7 +18,7 @@ namespace IdleClickerPeriodicTable.Core
         [DataMember] public int level = 1;
     }
 
-    /// <summary>Aquí se descubren los elementos y se desarrollan sus modelos con los recursos de la partida.</summary>
+    /// <summary>Aquí se llevan los descubrimientos de los elementos, sus modelos y las mejoras de personal.</summary>
     public sealed class ProductionResearchService
     {
         /// <summary>Los modelos de producción, tratamiento y almacenamiento pueden llegar hasta el nivel 4.</summary>
@@ -40,7 +40,7 @@ namespace IdleClickerPeriodicTable.Core
 
             foreach (ProductionDefinition entry in ProductionCatalog.Entries)
             {
-                if (progress.ContainsKey(entry.Id) || state.science < entry.Science || state.researchLevel < entry.AutomationRequired || (entry.Prerequisite.Length > 0 && !IsResearched(entry.Prerequisite)))
+                if (progress.ContainsKey(entry.Id) || state.science < entry.Science || state.researchLevel < entry.AutomationRequired || (entry.Prerequisite.Length > 0 && !IsResearched(entry.Prerequisite)) || (entry.IsStaffUpgrade && !IsNextStaffUpgrade(entry)))
                     continue;
 
                 progress.Add(entry.Id, new());
@@ -76,19 +76,45 @@ namespace IdleClickerPeriodicTable.Core
             return true;
         }
 
-        /// <summary>Se puede fabricar si el modelo está investigado, hay sitio en el contador y alcanzan ambos recursos.</summary>
-        public bool CanBuild(ProductionDefinition entry) => entry.HasMachine && IsResearched(entry.Id) && Count(entry.Id) < int.MaxValue && CanPay(entry, Level(entry.Id));
+        /// <summary>Se puede fabricar si la entrada está investigada y alcanzan ambos recursos, las mejoras de personal van en orden.</summary>
+        public bool CanBuild(ProductionDefinition entry)
+        {
+            if (!IsResearched(entry.Id))
+                return false;
 
-        /// <summary>Se añade una unidad después de cobrar el dinero y el ingenio de su nivel actual.</summary>
+            if (entry.IsStaffUpgrade)
+                return IsNextStaffUpgrade(entry) && CanPay(entry, 1);
+
+            return entry.HasMachine && Count(entry.Id) < int.MaxValue && CanPay(entry, Level(entry.Id));
+        }
+
+        /// <summary>Se cobra la fabricación y se añade una máquina o se aplica el siguiente nivel de la profesión.</summary>
         public bool Build(ProductionDefinition entry)
         {
             if (!CanBuild(entry))
                 return false;
 
-            Pay(entry, Level(entry.Id));
-            progress[entry.Id].count++;
+            if (entry.IsStaffUpgrade)
+            {
+                Pay(entry, 1);
+                state.ApplyStaffLevel(entry.Profession, entry.StaffLevel);
+            }
+            else
+            {
+                Pay(entry, Level(entry.Id));
+                progress[entry.Id].count++;
+            }
+
             return true;
         }
+
+        /// <summary>La mejora de personal deja de aparecer en Ingeniería cuando ya está aplicada.</summary>
+        public bool IsStaffUpgradeApplied(ProductionDefinition entry) => entry.IsStaffUpgrade && StaffLevel(entry.Profession) >= entry.StaffLevel;
+
+        /// <summary>El nivel de la mejora tiene que ser el siguiente al que ya usa la profesión.</summary>
+        bool IsNextStaffUpgrade(ProductionDefinition entry) => StaffLevel(entry.Profession) + 1 == entry.StaffLevel;
+
+        int StaffLevel(StaffProfession profession) => profession == StaffProfession.Research ? state.ResearchStaffLevel : state.EngineeringStaffLevel;
 
         /// <summary>Las mejoras se compran en orden para cada modelo investigado.</summary>
         public bool CanUpgrade(ProductionDefinition entry, int level) => entry.HasMachine && IsResearched(entry.Id) && level <= MaxLevel && level == Level(entry.Id) + 1 && CanPay(entry, level);

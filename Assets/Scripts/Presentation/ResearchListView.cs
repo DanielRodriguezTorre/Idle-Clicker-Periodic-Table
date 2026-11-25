@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 namespace IdleClickerPeriodicTable.Presentation
 {
-    /// <summary>Las filas de la escena muestran los modelos descubiertos que todavía quedan por investigar.</summary>
+    /// <summary>Las filas de la escena muestran los descubrimientos que todavía quedan por investigar.</summary>
     public sealed class ResearchListView : MonoBehaviour
     {
-        /// <summary>Cada investigación de producción usa una fila que ya está preparada en la escena.</summary>
+        /// <summary>Cada investigación del catálogo usa una fila que ya está preparada en la escena.</summary>
         [Serializable]
         sealed class ProductionRow
         {
@@ -135,7 +135,7 @@ namespace IdleClickerPeriodicTable.Presentation
             return any;
         }
 
-        /// <summary>Se actualizan las investigaciones pendientes de los cuatro elementos en la misma lista.</summary>
+        /// <summary>Se actualizan las investigaciones pendientes de elementos y personal dentro de la misma lista.</summary>
         /// <returns>Si queda al menos un descubrimiento de producción por investigar.</returns>
         bool RefreshProduction()
         {
@@ -168,8 +168,15 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <summary>Los textos del descubrimiento se preparan cuando la fila pasa a estar visible.</summary>
         static void PrepareProductionRow(ProductionRow row, ProductionDefinition entry)
         {
-            SetLabel(row.name, entry.NameKey);
             row.cost.SetArguments(entry.Science);
+
+            if (entry.IsStaffUpgrade)
+            {
+                StaffUpgradeText.Apply(entry, row.name, row.description);
+                return;
+            }
+
+            SetLabel(row.name, entry.NameKey);
             row.description.key = entry.HasMachine ? "production.research_model" : "production.research_element";
             row.description.SetLocalizedArguments("periodic_table.name." + entry.Element.ToLowerInvariant());
         }

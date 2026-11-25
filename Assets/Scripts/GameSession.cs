@@ -228,11 +228,11 @@ namespace IdleClickerPeriodicTable
             return true;
         }
 
-        /// <summary>Se fabrica una unidad del modelo investigado y se actualiza la cantidad en las pantallas.</summary>
+        /// <summary>Se fabrica una máquina o se aplica una mejora de personal ya investigada y se avisa a las pantallas.</summary>
         public void BuildProductionMachine(ProductionDefinition entry)
         {
             if (IsPlaying && ProductionResearch.Build(entry))
-                Changed?.Invoke();
+                PublishChanges(entry.IsStaffUpgrade && ProductionResearch.CheckDiscoveries());
         }
 
         /// <summary>Se compra el siguiente nivel de un modelo de producción y se avisa a las pantallas.</summary>

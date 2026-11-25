@@ -3,13 +3,21 @@ using System.Collections.Generic;
 
 namespace IdleClickerPeriodicTable.Core
 {
-    /// <summary>Los datos de cada investigación y, si lo tiene, del modelo que permite fabricar.</summary>
+    /// <summary>La profesión que recibe una mejora de producción y mantenimiento.</summary>
+    public enum StaffProfession
+    {
+        None,
+        Research,
+        Engineering
+    }
+
+    /// <summary>Los datos de cada investigación y de lo que permite desbloquear o fabricar.</summary>
     public sealed class ProductionDefinition
     {
         /// <summary>El identificador no cambia, sirve para guardar el progreso y enlazar los requisitos.</summary>
         public string Id { get; }
 
-        /// <summary>El elemento al que pertenece esta investigación o máquina.</summary>
+        /// <summary>El elemento de esta entrada, o un texto vacío si es una mejora de personal.</summary>
         public string Element { get; }
 
         /// <summary>Clave del nombre que se muestra en los listados.</summary>
@@ -24,17 +32,28 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>La ciencia necesaria para descubrir la entrada, esa misma cantidad se gasta al investigarla.</summary>
         public long Science { get; }
 
-        /// <summary>Lo que cuesta una unidad en ingenio antes de aplicar su nivel, es cero si no hay máquina.</summary>
+        /// <summary>El coste base en ingenio, para fabricar una máquina o aplicar una mejora de personal.</summary>
         public long Ingenuity { get; }
 
-        /// <summary>Lo que cuesta una unidad en dinero antes de aplicar su nivel, es cero si no hay máquina.</summary>
+        /// <summary>El coste base en dinero, para fabricar una máquina o aplicar una mejora de personal.</summary>
         public long Money { get; }
 
-        /// <summary>Indica si esta investigación permite fabricar una máquina.</summary>
-        public bool HasMachine => Money != 0;
+        /// <summary>La profesión que recibe esta mejora de personal, que solo se fabrica una vez.</summary>
+        public StaffProfession Profession { get; }
 
-        /// <summary>Se guardan los requisitos de la investigación y lo que costará fabricar su modelo.</summary>
-        internal ProductionDefinition(string id, string element, string nameKey, string prerequisite, long science, long ingenuity = 0, long money = 0, int automationRequired = 0)
+        /// <summary>El nivel que aplica la mejora de personal, o cero si la entrada no es de personal.</summary>
+        public int StaffLevel { get; }
+
+        /// <summary>Indica si fabricar esta entrada sube el nivel de una profesión en lugar de añadir una máquina.</summary>
+        public bool IsStaffUpgrade => Profession != StaffProfession.None;
+
+        /// <summary>Indica si esta investigación permite fabricar una máquina.</summary>
+        public bool HasMachine => Money != 0 && !IsStaffUpgrade;
+
+        /// <summary>Se guardan los requisitos y costes de la investigación, junto con el modelo o la mejora que desbloquea.</summary>
+        internal ProductionDefinition(string id, string element, string nameKey, string prerequisite, long science,
+            long ingenuity = 0, long money = 0, int automationRequired = 0,
+            StaffProfession profession = StaffProfession.None, int staffLevel = 0)
         {
             Id = id;
             Element = element;
@@ -44,13 +63,15 @@ namespace IdleClickerPeriodicTable.Core
             Ingenuity = ingenuity;
             Money = money;
             AutomationRequired = automationRequired;
+            Profession = profession;
+            StaffLevel = staffLevel;
         }
     }
 
-    /// <summary>Las investigaciones y los modelos de los cuatro elementos, con sus costes y requisitos.</summary>
+    /// <summary>Las investigaciones de elementos y mejoras de personal, con sus costes y requisitos.</summary>
     public static class ProductionCatalog
     {
-        /// <summary>Los elementos y sus modelos aparecen en el orden del catálogo.</summary>
+        /// <summary>Las entradas de Investigación e Ingeniería aparecen en este orden.</summary>
         public static IReadOnlyList<ProductionDefinition> Entries { get; } = new ProductionDefinition[]
         {
             new("H", "H", "periodic_table.name.h", "", 1_000, automationRequired: 1),
@@ -106,12 +127,25 @@ namespace IdleClickerPeriodicTable.Core
             new("S.R5", "S", "production.R5", "S", 3_400_000, 1_100_000, 1_600_000),
             new("S.R7", "S", "production.R7", "S", 3_000_000, 850_000, 1_250_000),
             new("S.storage", "S", "production.S.storage", "S8", 8_000_000, 3_400_000, 5_000_000),
+
+            StaffUpgrade("staff.research.2", "staff.upgrade.research", StaffProfession.Research, 2, 1_000),
+            StaffUpgrade("staff.research.3", "staff.upgrade.research", StaffProfession.Research, 3, 2_500),
+            StaffUpgrade("staff.research.4", "staff.upgrade.research", StaffProfession.Research, 4, 5_000),
+            StaffUpgrade("staff.research.5", "staff.upgrade.research", StaffProfession.Research, 5, 10_000),
+            StaffUpgrade("staff.engineering.2", "staff.upgrade.engineering", StaffProfession.Engineering, 2, 1_000),
+            StaffUpgrade("staff.engineering.3", "staff.upgrade.engineering", StaffProfession.Engineering, 3, 2_500),
+            StaffUpgrade("staff.engineering.4", "staff.upgrade.engineering", StaffProfession.Engineering, 4, 5_000),
+            StaffUpgrade("staff.engineering.5", "staff.upgrade.engineering", StaffProfession.Engineering, 5, 10_000),
         };
 
         static readonly Dictionary<string, ProductionDefinition> ById = IndexEntries();
 
         /// <summary>Se busca la entrada de una fila por su identificador, sin depender de su posición en la lista.</summary>
         public static ProductionDefinition Find(string id) => id != null && ById.TryGetValue(id, out var entry) ? entry : null;
+
+        /// <summary>La ciencia, el dinero y el ingenio de una mejora tienen el mismo coste base.</summary>
+        static ProductionDefinition StaffUpgrade(string id, string nameKey, StaffProfession profession, int level, long cost) =>
+            new(id, "", nameKey, "", cost, cost, cost, automationRequired: 1, profession: profession, staffLevel: level);
 
         static Dictionary<string, ProductionDefinition> IndexEntries()
         {

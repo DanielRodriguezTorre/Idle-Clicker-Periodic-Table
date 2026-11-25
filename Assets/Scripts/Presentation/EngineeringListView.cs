@@ -16,7 +16,7 @@ namespace IdleClickerPeriodicTable.Presentation
             public LocalizedText description, cost;
         }
 
-        /// <summary>Cada modelo de producción tiene su fila y tres mejoras colocadas a continuación.</summary>
+        /// <summary>Cada fila representa un modelo con sus tres mejoras o una mejora de personal de un solo uso.</summary>
         [Serializable]
         sealed class ProductionRow
         {
@@ -45,7 +45,7 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <summary>Las mejoras de automatizadores van agrupadas por familia y nivel.</summary>
         [SerializeField] UpgradeRow[] upgrades;
 
-        /// <summary>Modelos de los cuatro elementos que aparecen en el mismo contenido vertical.</summary>
+        /// <summary>Los modelos de los cuatro elementos y las mejoras de personal comparten la misma lista.</summary>
         [SerializeField] ProductionRow[] productionRows;
 
         GameSession session;
@@ -150,7 +150,7 @@ namespace IdleClickerPeriodicTable.Presentation
             }
         }
 
-        /// <summary>Aparecen los modelos de producción investigados, con su nivel y su cantidad al día.</summary>
+        /// <summary>Los modelos investigados muestran su cantidad y nivel, las mejoras de personal desaparecen al aplicarlas.</summary>
         void RefreshProduction()
         {
             var research = session.ProductionResearch;
@@ -158,7 +158,7 @@ namespace IdleClickerPeriodicTable.Presentation
             foreach (ProductionRow row in productionRows)
             {
                 var entry = row.entry;
-                bool visible = entry != null && research.IsResearched(entry.Id);
+                bool visible = entry != null && research.IsResearched(entry.Id) && !research.IsStaffUpgradeApplied(entry);
 
                 if (!visible)
                 {
@@ -167,6 +167,12 @@ namespace IdleClickerPeriodicTable.Presentation
                     foreach (UpgradeRow upgrade in row.upgrades)
                         SetVisible(upgrade.button.gameObject, false);
 
+                    continue;
+                }
+
+                if (entry.IsStaffUpgrade)
+                {
+                    RefreshStaffUpgrade(row);
                     continue;
                 }
 
@@ -196,6 +202,20 @@ namespace IdleClickerPeriodicTable.Presentation
                 SetVisible(row.button.gameObject, true);
                 RefreshProductionUpgrades(row, level);
             }
+        }
+
+        /// <summary>La mejora de personal aparece hasta que se fabrica, con su coste fijo y sin contador de unidades.</summary>
+        void RefreshStaffUpgrade(ProductionRow row)
+        {
+            if (!row.button.gameObject.activeSelf)
+            {
+                StaffUpgradeText.Apply(row.entry, row.name, row.description);
+                row.cost.SetArguments(row.entry.Money, row.entry.Ingenuity);
+                SetVisible(row.count.gameObject, false);
+                SetVisible(row.button.gameObject, true);
+            }
+
+            row.button.interactable = session.IsPlaying && session.ProductionResearch.CanBuild(row.entry);
         }
 
         /// <summary>Los nombres y los costes fijos se preparan cuando el modelo aparece por primera vez.</summary>

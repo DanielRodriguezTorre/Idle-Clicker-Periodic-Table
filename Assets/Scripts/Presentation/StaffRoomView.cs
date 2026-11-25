@@ -19,7 +19,7 @@ namespace IdleClickerPeriodicTable.Presentation
         /// <summary>La velocidad de los círculos en unidades locales del recinto por segundo.</summary>
         [Min(0)] public float speed = 65;
 
-        /// <summary>Los textos con la cantidad, el mantenimiento y la pausa de esta profesión, junto al estado de pago común.</summary>
+        /// <summary>Los textos con la cantidad, el nivel, el mantenimiento y la pausa de esta profesión, junto al estado de pago común.</summary>
         public LocalizedText countLabel, upkeepLabel, statusLabel;
 
         /// <summary>Los datos de cada círculo y su recorrido se guardan para no calcularlos de nuevo en cada frame.</summary>
@@ -79,7 +79,7 @@ namespace IdleClickerPeriodicTable.Presentation
             while (motions.Count < count)
                 AddWorker();
 
-            countLabel.SetArguments(count);
+            countLabel.SetArguments(count, researchers ? session.State.ResearchStaffLevel : session.State.EngineeringStaffLevel);
             upkeepLabel.SetArguments(researchers ? session.Staff.ResearcherUpkeep : session.Staff.EngineerUpkeep);
             string key;
 
@@ -143,9 +143,6 @@ namespace IdleClickerPeriodicTable.Presentation
         }
 
         /// <summary>Se elige un destino dentro del rectángulo del recinto.</summary>
-        Vector2 RandomPoint()
-        {
-            return new(Random.Range(bounds.xMin, bounds.xMax), Random.Range(bounds.yMin, bounds.yMax));
-        }
+        Vector2 RandomPoint() => new(Random.Range(bounds.xMin, bounds.xMax), Random.Range(bounds.yMin, bounds.yMax));
     }
 }

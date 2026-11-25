@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Numerics;
@@ -42,11 +43,32 @@ namespace IdleClickerPeriodicTable.Core
             set => ingenuity = BigInteger.Parse(value, NumberStyles.None, CultureInfo.InvariantCulture);
         }
 
-        /// <summary>Investigadores contratados, cada uno puede producir una unidad de ciencia por segundo.</summary>
+        /// <summary>Los investigadores contratados, cada uno produce según el nivel de su profesión.</summary>
         [DataMember] public int researchers;
 
-        /// <summary>Ingenieros contratados, cada uno puede producir una unidad de ingenio por segundo.</summary>
+        /// <summary>Los ingenieros contratados, cada uno produce según el nivel de su profesión.</summary>
         [DataMember] public int engineers;
+
+        /// <summary>El nivel aplicado a Investigación, puede faltar al cargar una partida anterior a estas mejoras.</summary>
+        [DataMember(EmitDefaultValue = false)] int researchStaffLevel;
+
+        /// <summary>El nivel aplicado a Ingeniería, puede faltar al cargar una partida anterior a estas mejoras.</summary>
+        [DataMember(EmitDefaultValue = false)] int engineeringStaffLevel;
+
+        /// <summary>El nivel de Investigación queda entre 1 y 5, las partidas que no lo guardaban empiezan en 1.</summary>
+        public int ResearchStaffLevel => Math.Clamp(researchStaffLevel, 1, 5);
+
+        /// <summary>El nivel de Ingeniería queda entre 1 y 5, las partidas que no lo guardaban empiezan en 1.</summary>
+        public int EngineeringStaffLevel => Math.Clamp(engineeringStaffLevel, 1, 5);
+
+        /// <summary>El nuevo nivel se aplica después de fabricar la mejora de esa profesión.</summary>
+        internal void ApplyStaffLevel(StaffProfession profession, int level)
+        {
+            if (profession == StaffProfession.Research)
+                researchStaffLevel = level;
+            else if (profession == StaffProfession.Engineering)
+                engineeringStaffLevel = level;
+        }
 
         /// <summary>Los investigadores pausados conservan su contratación, pero no cobran ni producen.</summary>
         [DataMember] public bool researchersPaused;
@@ -66,7 +88,7 @@ namespace IdleClickerPeriodicTable.Core
         /// <summary>Lo que se multiplica la producción de cada familia, de uno a cinco.</summary>
         [DataMember(IsRequired = true)] public int[] machineLevels = { 1, 1, 1, 1 };
 
-        /// <summary>El progreso de cada plano, puede faltar al cargar una partida anterior a los elementos.</summary>
+        /// <summary>Los descubrimientos de planos y personal, este progreso puede faltar en una partida antigua.</summary>
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, ProductionProgress> productionProgress;
     }
